@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<!-- versão 1.25 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Em busca da felicidade - vamo doando</title>
+    <link rel="icon" href="images/beta.png" type="image/png">
+    <meta http-equiv="Content-Language" content="pt-BR">
+<style>
+    :root {
+		--primary-color: #208C80;
+		--hover-color: #f0f0f0;
+		--completed-color: #888;
+		--background-color: #f7f7f7;
+		--text-color: #333;
+		--dark-background-color: #222;
+		--dark-text-color: #eee;
+		--dark-hover-color: #555;
+		--dark-primary-color: #3B9A94;
+		--dark-orange: #D95D09; /* Cor para mob/boss */
+		--green: #008000; /* Cor para item de quest */
+		--yellow: #FFEA00;
+		--blue: #007bff; /* Azul para mapa atual */
+		--purple: #9b59b6; /* Roxo para NPC */
+		--active-act-color: #FFD700; /* Cor para o ato ativo */
+		--border-color: #A0A0A0;
+		--dark-border-color: #555;
+		--light-blue: #20B2AA; /* Azul claro para recompensas simples e gemas */
+		--red: #B22222; /* Vermelho para recompensas importantes e stats */
+	}
+
+
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.4;
+        margin: 0;
+        display: flex;
+        background-color: var(--background-color);
+        transition: background-color 0.3s, color 0.3s;
+        position: relative;
+        height: 100vh; /* Permite o uso adequado do flexbox */
+    }
+
+    nav {
+        width: 200px;
+        background: var(--primary-color);
+        padding: 10px;
+        height: auto; /* Altura automática para ajustar ao conteúdo */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        position: sticky; /* Mantém o painel fixo enquanto rola */
+        top: 0; /* Mantém no topo */
+        border-radius: 5px;
+    }
+
+    nav ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+
+    nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        border: 2px solid transparent;
+        padding: 5px;
+        border-radius: 5px;
+        transition: border-color 0.3s; 
+    }
+
+    nav ul li a:hover {
+        border-color: #F0E68C; 
+    }
+
+    .content {
+        flex: 1;  /* Preenche todo o espaço restante */
+        padding: 15px;
+        overflow-y: auto; /* Adiciona rolagem apenas onde necessário */
+        box-sizing: border-box; 
+    }
+
+    h1 {
+        color: var(--text-color);
+        margin: 5px 0;
+    }
+
+    h2 {
+        color: var(--text-color);
+        margin: 5px 0;
+        border: 1px solid var(--primary-color);
+        padding: 8px;
+        border-radius: 5px; 
+        text-align: center; 
+    }
+
+    .task-item {
+        margin-bottom: 5px;
+        padding: 8px;
+        border-radius: 5px; 
+        cursor: pointer; 
+    }
+
+    .task-item input[type="checkbox"] {
+        margin-right: 8px;
+        cursor: pointer;
+    }
+
+    .task-item.checked {
+        text-decoration: line-through;
+        color: var(--completed-color);
+    }
+
+    .location {
+        font-size: 1em;  
+        color: var(--blue); 
+        margin: 15px 0 5px;
+        text-decoration: none; 
+        font-style: italic; 
+    }
+
+    .task-item:hover {
+        background-color: var(--hover-color);
+    }
+
+    .mob {
+        color: var(--dark-orange);
+        font-weight: bold;
+    }
+
+    .item {
+        color: var(--green);
+        font-weight: bold;
+    }
+
+    .npc {
+        color: var(--purple);
+        font-weight: bold; 
+    }
+
+    .dark-mode {
+        background-color: var(--dark-background-color);
+        color: var(--dark-text-color);
+    }
+
+    .dark-mode nav {
+        background: var(--dark-primary-color);
+    }
+
+    .dark-mode .task-item:hover {
+        background-color: var(--dark-hover-color);
+    }
+
+    .mode-toggle, .acto-button {
+        display: block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        border-radius: 5px;
+        margin: 5px 0;
+        border: 2px solid transparent; 
+        transition: border-color 0.3s; 
+    }
+
+    .mode-toggle:hover, .acto-button:hover {
+        background-color: #165e55;
+        border-color: #F0E68C; 
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 400px; 
+        background-color: #000000; /* Cor de fundo escura sem transparência */
+		color: #FFD700; /* Cor do texto em amarelo (amarelo ouro) */
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; 
+        left: 50%;
+        transform: translateX(50%); /* Ajuda a centralizar a tooltip em relação ao elemento do tooltip */
+		opacity: 0;
+		transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .made-by {
+        position: fixed;
+        bottom: 10px; 
+        left: 10px; 
+        color: white;
+        font-size: 0.8em;
+        display: flex;
+        align-items: center; 
+    }
+
+    .made-by img {
+        height: 1em; 
+        margin-left: 5px; 
+    }
+
+    .spacer {
+        margin-top: 50px; 
+    }
+
+    .tooltip.toggle-tips {
+        display: block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 2px solid transparent; 
+        transition: border-color 0.3s, background-color 0.3s; 
+    }
+
+    .tooltip.toggle-tips:hover {
+        background-color: #165e55;
+        border-color: #F0E68C; 
+    }
+
+    @media (max-width: 600px) {
+        nav {
+            width: 100%;
+            position: sticky;
+            top: 0;
+        }
+        .content {
+            padding: 10px;
+        }
+    }
+	.recompensa {
+    color: var(--light-blue); /* Azul claro para recompensas simples e gemas */
+    font-weight: bold; /* Opcional, para destaque */
+	}
+	
+	.recompensastats {
+    color: #B22222; /* Vermelho para recompensas importantes e stats */
+    font-weight: bold; /* negrito, para destaque */
+	}
+	        @media (max-width: 600px) {
+            nav {
+                width: 100%;
+                position: sticky;
+                top: 0;
+            }
+            .content {
+                padding: 10px;
+            }
+            
+            .task-item {
+                margin-bottom: 5px;
+                padding: 10px;
+                border-radius: 5px; 
+                cursor: pointer; 
+                width: 100%;
+            }
+            
+            .task-item input[type="checkbox"] {
+                margin-right: 8px;
+                cursor: pointer;
+            }
+            
+            .location {
+                font-size: 1em;  
+                color: var(--blue); 
+                margin: 15px 0 5px;
+                text-decoration: none; 
+                font-style: italic; 
+            }
+            
+            .task-item:hover {
+                background-color: var(--hover-color);
+            }
+            
+            /* ... */
+        }
+		
+</style>
+</head>
+<body>
+    <nav>
+        <button class="mode-toggle" onclick="toggleMode()">Modo Escuro</button>
+        <button class="tooltip toggle-tips" onclick="toggleTooltips()">Dicas Flutuantes</button>
+        <div class="spacer"></div>
+        <h2 class="guia-rapida">Guia Rápido</h2>
+        <a href="#ato1" class="acto-button">ATO 1</a>
+		<a href="#ato2" class="acto-button">ATO 2</a>
+		<a href="#ato3" class="acto-button">ATO 3</a>
+		<a href="#ato1-cruel" class="acto-button">ATO 1 CRUEL</a>
+		<a href="#ato2-cruel" class="acto-button">ATO 2 CRUEL</a>
+		<a href="#ato3-cruel" class="acto-button">ATO 3 CRUEL</a>
+    </nav>
+
+    <div class="content">
+        <h1>DETONADO POE 2 CAMPANHA</h1> 
+        <div class="tooltip">
+            <img src="images/ruminantes metalicos.png" width="160" height="160" />
+            <span class="tooltiptext">ruminantes metálicos</span>
+        </div>
+		<br>
+		<div>
+		<strong><u>Legenda (texto)</u></strong>: 
+			<br>
+			<span class="location" style="color: var(--blue);">Azul</span> = MAPA
+			<br>
+			<span class="mob" style="color: var(--dark-orange);">Laranja</span> = BOSS ou mob pra matar
+			<br>
+			<span class="item" style="color: var(--green);">Verde</span> = item de QUEST
+			<br>
+			<span class="recompensa" style="color: var(--light-blue);">Azul claro</span> = Recompensa SIMPLES
+			<br>
+			<span class="recompensastats" style="color: var(--red);">Vermelho</span> = Recompensa IMPORTANTE
+			<br>
+			<span class="npc" style="color: var(--purple);">Roxo</span> = NPC
+			<br>
+		</div>
+		<div class="task-item location tooltip" style="text-align: center;">
+			<a href="images/legendalayout.jpg" target="_blank" class="tooltip">Legenda (imagens de layout)</a>
+			<span class="tooltiptext">
+			<img src="images/legendalayout.jpg" alt="Legenda de layout" style="max-width: 100%; height: auto;">
+			<br>Clique para ampliar a imagem
+			</span>
+			
+			<div class="highlight-box" style="border: 2px solid red; background-color: #ffe6e6; padding: 15px; border-radius: 8px; font-size: 1.5em; font-weight: bold; margin-top: 15px;">
+			IMPORTANTE: passe o mouse e clique para ver os layouts!
+			</div>
+		</div>
+		<br>
+		OBS. O jogo rotaciona/inverte os mapas, mas o layout continua parecido!
+		<br>
+        <h2 id="ato1">--== ATO 1 ==--</h2>
+		<br>
+		<div class="task-item location tooltip">
+			Riverbank
+			<span class="tooltiptext">
+			<img src="images/riverbank.jpg" alt="Riverbank" style="max-width: 90%; height: auto;">
+			<br>Mapa Tutorial
+			</span>
+		</div>
+		<br>
+		<label class="task-item tooltip">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Mate <span class="mob">The Bloated Miller</span> então entre no acampamento. Reward: <span class="recompensa">Uncut Skill Gem</span>
+            <span class="tooltiptext"><img src="images/1.jpg"></span>
+        </label>
+		<br>
+		<div class="task-item location tooltip">
+			Cidade 1 (Acampamento)
+			<span class="tooltiptext">
+			<img src="images/cidade1.jpg" alt="Riverbank" style="max-width: 100%; height: auto;">
+			<br>Sua primeira cidade
+			</span>
+		</div>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Entregue as missões e siga para <span class="location tooltip">Clearfell</span>.
+        </label>
+		<br>
+		<div class="task-item location tooltip">
+			<a href="images/clearfell.jpg" target="_blank" class="tooltip">Clearfell</a>
+			<span class="tooltiptext">
+			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 110%; height: auto;">
+			<br>
+			</span>
+		</div>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) Procure um baú abandonado. Reward: <span class="recompensa">Uncut Skill Gem</span>
+        </label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Mate <span class="mob">Beira of the Rotten Pack</span>. Ela está ao norte/nordeste do waypoint. Reward: <span class="recompensastats">10% Cold Resist</span>
+        </label>
+		<br>
+		<label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip">(OPCIONAL) Mate <span class="mob">The Devourer</span> está dentro do túnel <span class="location">Mud Burrow</span>. Reward: <span class="recompensa">Uncut Skill Gem</span> + <span class="recompensa">Uncut Support Gem</span>
+			<span class="tooltiptext">
+            <img src="images/mudburrow.jpg" alt="Mud Burrow" style="max-width: 100%; height: auto;">
+            <br>
+				Vá pelo centro, o Boss está no lado oposto da entrada
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e siga para <span class="location">The Grelwood</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<span class="tooltiptext">
+			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Reto pro meio, até achar um POnto de Interesse, depois segue alguma diagonal (padrão diamante) pra achar os próximos
+				<br>
+				2.	Saída no lado oposto da entrada
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) <span class="mob">Gerung, the Brambleghast</span> Reward: <span class="recompensa">Uncut Skill Gem Level 2</span>
+        </label>
+		<br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) <span class="mob">Areagne, Forgotten Witch</span> Reward: <span class="recompensa">Uncut Support Gem Level 1</span>, <span class="recompensa">2 flasks no caldeirão</span>
+        </label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Obtenha o waypoint e fale com <span class="npc">Una</span> perto da arvore das almas.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre o túnel <span class="location">The Grim Tangle</span>, entre, pegue o waypoint, e volte para The Grelwood.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre a entrada para <span class="location">The Red Vale</span> e entre
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/theredvale.jpg" target="_blank" class="tooltip">The Red Vale</a>
+			<span class="tooltiptext">
+			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
+			<br>Semi-círculo
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre os três obeliscos e obtenha os três itens da missão.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Teleporte para a cidade e fale com <span class="npc">Renly</span> para adquirir <span class="item">Runed Spikes</span>. Dê waypoint para voltar à <span class="location">The Grelwood</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<span class="tooltiptext">
+			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
+			<br>
+				árvore está perto do waypoint!
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            próximo da arvore Invoque e fale com a <span class="npc">Una</span>.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> Espete a árvore com suas <span class="item">Runed Spikes</span> e então fale com <span class="npc">Una</span> novamente
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> Volte para cidade, fale com os <span class="npc">NPCs</span>, dê waypoint para o túnel <span class="location">The Grim Tangle</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrimtangle.jpg" target="_blank" class="tooltip">The Grim Tangle</a>
+			<span class="tooltiptext">
+			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá pelo centro (não abrace as bordas como de costume)
+				<br>
+				2.	Siga pra cima ou esquerda (entrada em baixo = saída em cima) 
+			</span>
+		</div>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) <span class="mob">The Rotten Druid</span> Reward: <span class="recompensa">Uncut Support Gem</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre a entrada para o <span class="location">Cemetery of The Eternals</span>. 
+        </label>
+		<br>
+        <div class="task-item location tooltip">
+			<a href="images/cemeteryoftheeternals.jpg" target="_blank" class="tooltip">Cemetery of The Eternals</a>
+			<span class="tooltiptext">
+			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
+			<br>
+				Circule a área próximo às bordas
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Fale com <span class="npc">Lachlann the Lost</span>, vai pedir 2 chaves para abrir o portão
+        </label>
+		<br>
+		<label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip">Encontre <span class="location">Mausoleum of the Praetor</span>, entre, mate <span class="mob">Draven, Eternal Praetor</span>, colete chave 1/2
+			<span class="tooltiptext">
+            <img src="images/mausoleumofthepraetor.jpg" alt="Mausoleum of The Praetor" style="max-width: 130%; height: auto;">
+            <br>
+				1. Segue meio focado em encontrar a sala do CENTRO, que contém 4 saídas
+				<br>
+				2. Na sala central: Escolha alguma diagonal para seguir, ela está bloqueada por uma PAREDE
+				<br>
+				3. Pegue alguma saída focando em alcançar o outro lado desta PAREDE
+				<br>
+				4. A sala do Boss pode ser detectada por seus quadradinhos (veja o circulo vermelho)
+			</span>
+			</span>
+		</label>
+		<br>
+		<label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip">Encontre <span class="location">Tomb of the Consort</span> entre, mate <span class="mob">Asinia, Praetor Consort</span>, colete chave 2/2 entre no portal que abriu
+			<span class="tooltiptext">
+            <img src="images/tomboftheconsort.jpg" alt="Mausoleum of The Praetor" style="max-width: 130%; height: auto;">
+            <br>
+				1. Segue meio
+				<br>
+				2. Vai ter alguma curva (esquerda ou direita)
+				<br>
+				3. Boss no lado oposto da entrada
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Retorne as chaves para <span class="mob">Lachlann of Endless Lament</span>, abra o portão e mate ele.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e siga para <span class="location">Hunting Grounds</span>.
+        </label>
+        <br>
+		<div class="task-item location tooltip">
+			<a href="images/huntinggrounds.jpg" target="_blank" class="tooltip">Hunting Grounds</a>
+			<span class="tooltiptext">
+			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
+			<br>
+				Abrace a parede da borda do mapa, evite o meio
+			</span>
+		</div>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e mate <span class="mob">The Crowbell</span>. Reward: <span class="recompensastats"> +2 skill points</span>
+        </label>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Freythorn</span>, obtenha o waypoint, volte pra <span class="location">Hunting Grounds</span>
+        </label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Ogham Farmlands</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghamfarmlands.jpg" target="_blank" class="tooltip">Ogham Farmlands</a>
+			<span class="tooltiptext">
+			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá para direita ou esquerda
+				<br>
+				2.	Entre no centro do mapa para pegar o violão de Una dentro da casa
+				<br>
+				3. Continue reto até bater na parede, e siga abraçando a borda
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre <span class="item">Una's Lute</span>. Geralmente está no centro do mapa, dentro da casa. Entregue para <span class="npc">Una</span> na cidade. Reward: <span class="recompensastats"> +2 skill points</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) Encontre e mate <span class="mob">Vargir The Feral Mutt</span> no círculo de colheita. Reward: <span class="recompensa"> level 4 skill gem</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Ogham Village</span> , pegue o waypoint , use-o para ir para <span class="location">Freythorn</span> 
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/freythorn.jpg" target="_blank" class="tooltip">Freythorn</a>
+			<span class="tooltiptext">
+			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá pelas bordas
+				<br>
+				2.	Encontre o ritual final (do Boss)
+				<br>
+				3.	Ele solta névoa indicando a direção dos rituais menores
+			</span>
+		</div>
+		<br>
+		<label class="task-item tooltip">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensastats"> +30 spirit</span>, <span class="recompensa"> level 4 Uncut Spirit Gem 
+			<span class="tooltiptext">
+			Debuff VERMELHO: fique PARADO para não tomar freeze
+			<br>
+			<img src="images/kinginthemists.jpg" alt="The King in the Mists" style="max-width: 100%; height: auto;">
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            TP para a cidade e waypoint para <span class="location">Ogham Village</span> .
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghamvillage.jpg" target="_blank" class="tooltip">Ogham Village</a>
+			<span class="tooltiptext">
+			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Abrace a parede à sua direita e siga NORTE.
+				<br>
+				2.	Se já está no Boss e ainda não encontrou as Smithing Tools, volte para a entrada (use o checkpoint) e faça o caminho reverso.
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Se for seu primeiro personagem da liga encontre <span class="item">Smithing Tools</span> .
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e mate <span class="mob">The Executioner</span>. Reward: <span class="recompensa">Uncut Skill Gem Level 5</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Vá para as muralhas <span class="location">The Manor Ramparts</span> .
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/themanorramparts.jpg" target="_blank" class="tooltip">The Manor Ramparts</a>
+			<span class="tooltiptext">
+			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Formato de U
+				<br>
+				2.	Gallows está perto da borda, pouco antes da Mansão
+			</span>
+		</div>
+        <br>		
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (Opcional) Looteie o enforcado. Reward: <span class="recompensa">level 1 Uncut Support Gem</span>
+        </label>
+		<br>
+        <label class="task-item tooltip">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			Encontre a entrada para a mansão <span class="location">Ogham Manor</span>. Fica na direção oposta do waypoint 
+			<span class="tooltiptext">
+			<img src="images/oghammanorentrada.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			</span>
+		</label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghammanor.jpg" target="_blank" class="tooltip">Ogham Manor</a>
+			<span class="tooltiptext">
+			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Direita/Nordeste, até atravessar a ponte (buraco de vista pro Boss)
+				<br>
+				2.	Norte para matar Candlemass, depois Nordeste para ao próximo nível.
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats"> +maximum life</span>
+			<span class="tooltiptext">
+			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Direita/Nordeste, até atravessar a ponte (buraco de vista pro Boss)
+				<br>
+				2.	Norte para matar Candlemass, depois Nordeste para ao próximo nível.
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e desça as escadas.
+			<span class="tooltiptext">
+			<img src="images/oghammanor1.jpg" alt="Ogham Manor 1" style="max-width: 130%; height: auto;">
+			<br>
+				Vá na direção oposta à entrada, atravesse a ponte
+			</span>
+			</span>
+		</label>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e desça as escadas (denovo).
+			<span class="tooltiptext">
+			<img src="images/oghammanor2.jpg" alt="Ogham Manor 2" style="max-width: 130%; height: auto;">
+			<br>
+				Pegue o elevador para enfrentar o Boss
+			</span>
+			</span>
+		</label>
+        <br>
+        	<div class="task-item location tooltip">
+			Cidade 1 (Acampamento)
+			<span class="tooltiptext">
+			<img src="images/cidade1.jpg" alt="Riverbank" style="max-width: 100%; height: auto;">
+			<br>Sua primeira cidade
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Se for o seu primeiro personagem da liga: Fale com <span class="npc">Renly</span> para entregar as <span class="item">Smithing Tools</span>. Reward: <span class="recompensastats"> Mesa de trabalho (1/2)</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Fale com <span class="npc">The Hooded One</span> para ir ao Ato 2.
+        </label>
+    <!-- FIM DO ATO 1 -->
+
+    <!-- Início do ATO 2 -->
+    <h2 id="ato2">--== ATO 2 ==--</h2>
+    <div class="task-item location tooltip">
+		<a href="images/vastirioutskirts.jpg" target="_blank" class="tooltip">Vastiri Outskirts</a>
+		<span class="tooltiptext">
+		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
+		<br>
+			1.	Se a saída para o deserto for para o leste --→ abrace a parede da direita
+			<br>
+			2.	Se a saída para o deserto for para o oeste ←-- abrace a parede da esquerda
+			<br>
+			3.	Continue até encontrar um desfiladeiro estreito que leva ao boss
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Rathbreaker</span>. Reward: <span class="recompensa">level 5 Uncut Skill Gem</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan.
+    </label>
+    <br>
+	<div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+	<br>	
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span> e use o mapa do deserto para ir à <span class="location">Halani Gates</span>
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Lá a NPC vai te falar que a entrada está bloqueada, então use o mapa do deserto para ir à <span class="location">Mawdun Quarry</span>
+    </label>
+	<br>
+    <div class="task-item location tooltip">
+			<a href="images/mawdunquarry.jpg" target="_blank" class="tooltip">Mawdun Quarry</a>
+			<span class="tooltiptext">
+			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Abrace uma parede e segue as pontes
+				<br>
+				2.	Forma de S, forma de Z ou loop de cima para baixo.
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e pegue a entrada para <span class="location">Mawdun Mine</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/mawdunmine.jpg" target="_blank" class="tooltip">Mawdun Mine</a>
+			<span class="tooltiptext">
+			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Mapa em formato de diamante
+				<br>
+				2.	Alcance a rua principal
+				<br>
+				3.	Siga sempre para o Norte
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Rudja, the Dread Engineer</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Liberte e fale com <span class="npc">Risu, Faridun Defector</span>, depois portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir a <span class="location">The Halani Gates</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Sekhema Asala</span> nos portões, volte para a caravana, fale com <span class="npc">Risu</span> novamente e depois com <span class="npc">Sekhema Asala</span> novamente.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Traitor's Passage</span>.
+    </label>
+    <br>
+	<div class="task-item location tooltip">
+			<a href="images/traitorspassage.jpg" target="_blank" class="tooltip">Traitor's Passage</a>
+			<span class="tooltiptext">
+			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Layout 1: Vá no sentido oposto da entrada até achar uma bifurcação no Lore Book, para achar Basala siga os papéis na parede
+				<br>
+				2.	Layout 2: Se logo de início você encontrar a escadaria "Six Sisters", então Basala está próxima! Na sua primeira esquerda ou direita
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Basala</span>, dropa item necessário para ascendência em Trial of Sekhemas <span class="recompensastats">Djinn Barya</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Halani Gates</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thehalanigates.jpg" target="_blank" class="tooltip">The Halani Gates</a>
+			<span class="tooltiptext">
+			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Sentido oposto da entrada, geralmente para sudeste
+				<br>
+				2.	Padrão S (vai para um lado e para o outro, zigue-zague)
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Jamanra, the Risen King</span>. Fique perto do cânion. Atravesse o cânion 3 vezes para encontrar o boss.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Persiga o boss: descendo as escadas, e indo até o canto inferior direito do deserto, depois volte para a cidade. Reward: <span class="recompensa">level 7 Uncut Skill Gem</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir ao <span class="location">Trial of Sekhemas</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Pegue o waypoint/fale com <span class="npc">NPCs</span>
+	</label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Faça o trial para ganhar pontos de ascendência
+	</label>	
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Keth</span>
+	</label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/keth.jpg" target="_blank" class="tooltip">Keth</a>
+			<span class="tooltiptext">
+			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Siga pela borda até achar Kabala, Checkpoint, e a saída no lado oposto do mapa.
+				<br>
+				2.	Se não encontrá-la, retorne à entrada via checkpoint e tente novamente por outro lado
+				<br>
+				3.	Se não encontra-la, procure pelo meio, próximo de um terreno que parece com o rosto do Homer Simpson
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Kabala, Constrictor Queen</span>. Reward: <span class="recompensastats"> +2 skill points</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate cobras até encontrar o item <span class="item">Kabala Clan Relic</span> (1/2 relics)
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">The Lost City</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thelostcity.jpg" target="_blank" class="tooltip">The Lost City</a>
+			<span class="tooltiptext">
+			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Vá para as diagonais para encontrar a ponte em V
+				<br>
+				2.	A parte final tem formato de asa
+			</span>
+		</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na tumba dourada e sobreviva. Reward: <span class="recompensa">Uncut Spirit Gem lvl 6 ou 7</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada e vá para <span class="location">Buried Shrines</span>
+    </label>
+	<br>
+	<div class="task-item location tooltip">
+			<a href="images/buriedshrines.jpg" target="_blank" class="tooltip">Buried Shrines</a>
+			<span class="tooltiptext">
+			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Duas seções retangulares separadas por pontes
+				<br>
+				2.	Layout 1 - Ponte Sul para o Norte: Siga pro norte.
+				<br>
+				3.	Layout 2 - Ponte Norte para o Sul: Siga pro sul depois leste.
+				<br>
+				4.	Testar: full esquerda/direita para encontrar Elemental Shrine com anel, depois NNE.
+			</span>
+	</div>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na Elemental Shrine para ganhar um anel. (Recomendado Ruby Ring, de fire resist).
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
+    </label>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e siga para <span class="location">Heart of Keth</span>
+    </label>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Azarian, the Forsaken Son</span> em <span class="location">Buried Shrines</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Halani, the Water Goddess</span>, colete as cinzas, queime a deusa, colete a essência da água. Reward: <span class="recompensa">level 1 Uncut Support Gem</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Mastodon Badlands</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/mastodonbadlands.jpg" target="_blank" class="tooltip">Mastodon Badlands</a>
+			<span class="tooltiptext">
+			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Abrace a parede na direção oposta ao waypoint
+				<br>
+				2.	Segue pela borda
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Bone Pits</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thebonepits.jpg" target="_blank" class="tooltip">The Bone Pits</a>
+			<span class="tooltiptext">
+			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Ao passar pelo arco de ossos continue na mesma direção
+				<br>
+				2.	Lado oposto do mapa
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Iktab, the Deathlord</span> e <span class="mob">Ekbab, Ancient Steed</span> (estão juntos) e colete <span class="item">Mastodon Tusks</span> Reward: <span class="recompensa">level 1 Uncut Support Gem</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate Hienas até encontrar o item <span class="item">Sun Clan Relic</span> (2/2 relics)
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        TP de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Valley of the Titans</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/valleyofthetitans.jpg" target="_blank" class="tooltip">Valley of the Titans</a>
+			<span class="tooltiptext">
+			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Próximo a entrada, no centro, encontre a entrada de Titan Grotto (a camera dá zoomout)
+				<br>
+				2.	Abrace alguma parede e siga pelas bordas
+				<br>
+				3.	O último selo pode estar no centro, no meio do desfiladeiro
+				<br>
+				4.	Por fim, use o checkpoint pra voltar para a entrada de Titan Grotto
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e ative 3 selos antigos.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre o altar clique no Medallion e coloque as duas relíquias. Reward: <span class="recompensastats"> 30% Increased Charm charges gained</span> ou <span class="recompensastats"> 15% Increased Mana Recovery from Flasks</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e pegue a entrada para <span class="location">The Titan Grotto</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thetitangrotto.jpg" target="_blank" class="tooltip">The Titan Grotto</a>
+			<span class="tooltiptext">
+			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Formato de retângulo, Boss está no lado oposto da entrada
+				<br>
+				2.	Deve pegar várias curvas, portanto não se apegue as bordas do mapa
+				<br>
+				Dica:	Posicione-se na mão direita do Boss pra desviar de 2 mecânicas
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Zalmarath, the Colossus</span>, depois volte para a cidade. Reward: <span class="recompensa">level 1 Uncut Support Gem</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Zarka</span>, depois com <span class="npc">Sekhema Asala</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para viajar para <span class="location">Halani Gates</span>.
+    </label>
+    <br>
+	<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Vá para a frente da caravana e sopre o shofar.
+		<span class="tooltiptext">
+        <img src="images/shofar.jpg" alt="Shofar" style="max-width: 100%; height: auto;">
+		</span>
+	</label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para viajar até <span class="location">Deshar</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/deshar.jpg" target="_blank" class="tooltip">Deshar</a>
+			<span class="tooltiptext">
+			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Duas áreas. A segunda é cheia de construções.
+				<br>
+				2.	O corpo está ao redor de alguma construção, no lado de fora.
+				<br>
+				3.	Saída fica no lado oposto à entrada do mapa, as vezes dentro de uma construção.
+			</span>
+		</div>
+    <br>
+    <label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Clique na montaria abandonada "Abandoned Rhoa" para iniciar a quest. Procure um cadáver "Fallen Dekhara" e colete <span class="item">Final Letter</span>. Entregue para <span class="npc">Shambrin</span> na cidade. Reward: <span class="recompensastats"> +2 skill points</span>
+		<span class="tooltiptext">
+        <img src="images/fallendekhara.jpg" alt="Fallen Dekhara" style="max-width: 100%; height: auto;">
+		</span>
+	</label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Em Watchful Twins sobreviva a emboscada de 2 pássaros raros. Reward: <span class="recompensa">Djinn Barya</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para o <span class="location">Path of Mourning</span>.
+    </label>
+    <br>
+	<div class="task-item location tooltip">
+			<a href="images/pathofmourning.jpg" target="_blank" class="tooltip">Path of Mourning</a>
+			<span class="tooltiptext">
+			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
+			<br>
+					Sentido oposto, sempre alternando a rota ao passar por 3 construções exemplo:
+				<br>
+				Layout 1:	Desce, 3, sobe, 3, desce, 3, sobe
+				<br>
+					ou 
+				<br>
+				Layout 2:	Sobe, 3, desce, 3, sobe, 3, desce 
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Spires of Deshar</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thespiresofdeshar.jpg" target="_blank" class="tooltip">The Spires of Deshar</a>
+			<span class="tooltiptext">
+			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Vá para o lado oposto da entrada
+				<br>
+				2.	Sisters of Garukhan é cercada por 4 plataformas ao seu redor, formando um G
+				<br>
+				3.	Sisters of Garukhan sempre tem acesso por baixo ou direita
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Tor Gul, the Defiler</span>
+    </label>
+	<br>
+	<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Clique no altar Sisters of Garukhan. Reward: <span class="recompensastats">+10% Lightning Resistance</span>
+		<span class="tooltiptext">
+        <img src="images/sistersofgarukhan.jpg" alt="Sisters of Garukhan" style="max-width: 130%; height: auto;">
+		</span>
+	</label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">The Dreadnought</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thedreadnought.jpg" target="_blank" class="tooltip">The Dreadnought</a>
+			<span class="tooltiptext">
+			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
+			<br>
+				Para ambos os mapas é só ir no sentido oposto da entrada, evite as bordas
+				<br>
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">Dreadnought Vanguard</span>, depois encontre e mate <span class="mob">Jamanra, the Abomination</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Saia da Caravana e fale com <span class="npc">The Hooded One</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a Caravana e fale com <span class="npc">Sekhema Asala</span> para ir para o Ato 3.
+    </label>
+    <!-- FIM DO ATO 2 -->
+
+    <!-- Início do ATO 3 -->
+    <h2 id="ato3">--== ATO 3 ==--</h2>
+    <div class="task-item location tooltip">
+			<a href="images/sandsweptmarsh.jpg" target="_blank" class="tooltip">Sandswept Marsh</a>
+			<span class="tooltiptext">
+			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
+			<br>
+				1.	Segue reto, um pouco para esquerda ou direita, até obter o checkpoint do acampamento zigurate no lado oposto do mapa
+				<br>
+				2.	Depois, continue correndo ao longo da parede até encontrar Azak Campfire (basket loot)
+			</span>
+	</div>
+    <br>
+	<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Looteie a cesta em Orok/Azak Campfire protegida por <span class="mob">Garkam, Ranbu's Maul</span> e <span class="mob">Ranbu the Pale Shaman</span>. Reward: <span class="recompensastats">Lesser Jeweller's Orb</span>
+		<span class="tooltiptext">
+        <img src="images/basket.jpg" alt="Basket" style="max-width: 120%; height: auto;">
+		</span>
+	</label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Encontre Hanging Tree looteie do cadáver um <span class="recompensa">magic ring</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para o <span class="location">Ziggurat Encampment</span> (cidade 3).
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 3 (Ziggurat Encampment)
+		<span class="tooltiptext">
+		<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+		<br>Sua terceira cidade
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span> e entre em <span class="location">Jungle Ruins</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jungleruins.jpg" target="_blank" class="tooltip">Jungle Ruins</a>
+			<span class="tooltiptext">
+			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Abrace uma parede e de uma volta pela borda
+				<br>
+				2.	Gorila deve estar do meio pra frente
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. <span class="recompensastats"> Reward: +2 Skill Points</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Obtenha o waypoint, não entre ainda nas criptas
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre <span class="location">Infested Barrens</span>, entre, pegue o waypoint, use-o para voltar à <span class="location">Jungle Ruins</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Próximo ao waypoint: Encontre e entre em <span class="location">The Venom Crypts</span> 
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thevenomcrypts.jpg" target="_blank" class="tooltip">The Venom Crypts</a>
+			<span class="tooltiptext">
+			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Circunde as paredes internas, se não achar vá pelas bordas
+			</span>
+	</div>
+	<br>
+		<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Encontre o cadáver e colete o <span class="item">Corpse-snake Venom</span>, entregue para <span class="npc">Servi</span> na cidade. Reward: <span class="recompensastats"> Venom Draught of ...</span>
+		<span class="tooltiptext">
+        Após entregar escolha um. Não poderá ser alterada depois!
+        <img src="images/draughts1.jpg" alt="Venom Draught" style="max-width: 200%; height: auto;">
+		</span>
+	</label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Waypoint para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<span class="tooltiptext">
+			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
+			<br>
+				Vá pelas bordas
+				<br>
+			</span>
+	</div>
+    <br>
+	Colete waypoint daqui e de áreas adjacentes (não importa a ordem): 
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">Chimeral Wetlands</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Azak Bog</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Com os 3 waypoints obtidos, siga para <span class="location">The Azak Bog</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theazakbog.jpg" target="_blank" class="tooltip">The Azak Bog</a>
+			<span class="tooltiptext">
+			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Mob está no quadrante nordeste
+				<br>
+				2.	Fogueiras ficam no centro
+				<br>
+				3.	Atenção: o mapa pode estar rotacionado! Ajuste de acordo com a entrada
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Opcional: Encontre o ritual Flameskin e ative todos, dá 25% de resistência a fogo e raridade pelo resto do mapa.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Ignagduk, the Bog Witch</span>. Reward: <span class="recompensa">level 10 Uncut Spirit Gem</span>, <span class="recompensastats">+30 spirit</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a cidade entregar quests, waypoint para <span class="location">Chimeral Wetlands</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/chimeralwetlands.jpg" target="_blank" class="tooltip">Chimeral Wetlands</a>
+			<span class="tooltiptext">
+			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
+			<br>
+					Abrace a parede da esquerda e segue pela borda
+				<br>
+			</span>
+	</div>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Entre no templo/<span class="location"> Trial of Chaos</span> pegue seu waypoint e volte para <span class="location">Chimeral Wetlands</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Xyclucian, the Chimera</span>. Reward: <span class="recompensa">level 9 Uncut Skill Gem</span>, <span class="recompensastats">Chimeral Inscribed Ultimatum</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Entre em <span class="location">Jiquani's Machinarium</span> (logo após chimera) e pegue o waypoint.
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Waypoint de volta ao Trial of Chaos, e o faça para ganhar pontos de ascendência
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jiquanismachinarium.jpg" target="_blank" class="tooltip">Jiquani's Machinarium</a>
+			<span class="tooltiptext">
+			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
+			<br>
+				1.	O primeiro small soul core está em alguma sala próxima, esquerda/direita
+				<br>
+				2.	Os demais estão nas laterais da linha principal, atravesse pelas laterais mas focado nela
+				<br>
+				3.	Blackjaw está no lado oposto da entrada em alguma lateral esquerda/direita
+				<br>
+				4.	A saída para Jiquani's Sanctum está diretamente oposta a entrada deste mapa
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre o primeiro <span class="item">Small Soul Core</span> e abra a porta.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre mais dois <span class="item">Small Soul Core</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Blackjaw, the Remnant</span>. Reward: <span class="recompensastats">+10% Fire Resist</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">Jiquani's Sanctum</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jiquanissanctum.jpg" target="_blank" class="tooltip">Jiquani's Sanctum</a>
+			<span class="tooltiptext">
+			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
+			<br>
+				Não use checkpoint com soul core no inventario!
+				<br>
+				speedrun:	Pode usar respawn at checkpoint para spawnar medium core próximo do gerador
+				<br>
+				speedrun:	Pode dar TP antes de ativar o segundo gerador e voltar via waypoint, mas ainda tem que esperar animação
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Pegue o waypoint.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre 2 <span class="item">Medium Soul Core</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ative 2 geradores. Um em cada sala, depois volte pra <span class="npc">Alva</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Zicoatl, Warden of the Core</span> e saqueie <span class="item">Large Soul Core</span>. Reward: <span class="recompensa">Uncut Spirit Gem</span>
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Use Corruption Altar para corromper um item gratuitamente
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para o waypoint de <span class="location">Infested Barrens</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<span class="tooltiptext">
+			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
+			<br>
+				Vá pelas bordas
+				<br>
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Insira <span class="item">Large Soul Core</span> e entre em <span class="location">The Matlan Waterways</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thematlanwaterways.jpg" target="_blank" class="tooltip">The Matlan Waterways</a>
+			<span class="tooltiptext">
+			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
+			<br>
+				
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ative todas as alavancas para passar pelo mapa, depois ative a grande no final.
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Mate <span class="mob">Narag of the Vile Word</span>. Reward: <span class="recompensa">arma rara</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Tp de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			Cidade 3 (Ziggurat Encampment)
+			<span class="tooltiptext">
+			<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+			<br>Sua terceira cidade
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Desça as escadas perto do poço / <span class="npc">The Hooded One</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span>, entre em <span class="location">The Drowned City</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thedrownedcity.jpg" target="_blank" class="tooltip">The Drowned City</a>
+			<span class="tooltiptext">
+			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
+			<br>
+				1.	A partir do waypoint siga Nordeste até bater na parede
+				<br>
+				2.	Vire a direita, depois esquerda (reto até obter o checkpoint)
+				<br>
+				3.	Esquerda para molten vault ou direita+esquerda para Apex of Filth
+				<br>
+			</span>
+	</div>
+    <br>
+	Pule The Molten Vault apenas se não for o seu primeiro personagem na liga. Colete waypoint daqui e de áreas adjacentes (não importa a ordem):
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Molten Vault</span>. Entre, pegue o waypoint, e volte para <span class="location">The Drowned City</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Apex of Filth (quarto do ovelhera)</span>. Entre, pegue o waypoint, e volte para <span class="location">The Drowned City</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Com os 2 waypoints obtidos, Waypoint para <span class="location">The Molten Vault</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/themoltenvault.jpg" target="_blank" class="tooltip">The Molten Vault</a>
+			<span class="tooltiptext">
+			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Após ativar a alavanca siga para o leste/nordeste, sempre subindo
+				<br>
+				2.	Ao chegar no limite, foque sudeste
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Mektul, the Forgemaster</span>, depois fale com <span class="npc">Oswald</span> na cidade. Reward: <span class="recompensa"> level 10 Uncut Skill Gem</span>, <span class="recompensastats"> Mesa de trabalho (2/2)</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Vá para <span class="location">The Apex of Filth (quarto do ovelhera)</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theapexoffilth.jpg" target="_blank" class="tooltip">The Apex of Filth</a>
+			<span class="tooltiptext">
+			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
+			<br>
+				dica rápida:	abrace a parede interna (longe das bordas)
+				<br>
+				1.	O caminho correto é para a esquerda/direita, com uma extremidade sem saída. (Boss está do outro lado)
+				<br>
+				2.	Segue acompanhando o rio podre, ignore as pequenas pontes por enquanto
+				<br>
+				3.	Continue reto até não poder mais, então atravesse para o outro lado
+				<br>
+				4.	Vá reto e faça um loop abraçando a parede interna (longe das bordas) como se quisesse voltar para o waypoint
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Jogue 3 cogumelos diferentes no caldeirão para ganhar flasks de vida e mana
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">The Queen of Filth</span>, TP de volta para a cidade.
+    </label>	
+	<br>
+    <div class="task-item location tooltip">
+		Cidade 3 (Ziggurat Encampment)
+		<span class="tooltiptext">
+		<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+		<br>Sua terceira cidade
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Desça as escadas perto do poço / <span class="npc">The Hooded One</span> novamente, e entre em <span class="location">Temple of Kopec</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/templeofkopec.jpg" target="_blank" class="tooltip">Temple of Kopec</a>
+			<span class="tooltiptext">
+			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
+			<br>
+				Primeiro andar:	Procure a saída em um dos 3 cantos, use respawn to checkpoint para voltar, ou caminhe.
+				<br>
+				Segundo andar:	Pule por cima da rachadura no chão (skill de Mace: Leap Slam), ou dê a volta.
+			</span>
+	</div>
+    <br>
+    <label class="task-item tooltip">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Suba as escadas duas vezes, depois mate <span class="mob">Ketzuli, High Priest of the Sun</span>
+		<span class="tooltiptext">evite a luz solar
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span> para subir o elevador.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Passe pelo gateway, depois desça as escadas novamente para entrar em <span class="location">Utzaal</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/utzaal.jpg" target="_blank" class="tooltip">Utzaal</a>
+			<span class="tooltiptext">
+			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
+			<br>
+				Mesmo layout de The Drowned City:
+				<br>
+				1.	A partir do waypoint siga reto (Nordeste) até bater na parede
+				<br>
+				2.	Vire a direita, esquerda(checkpoint), direita, esquerda
+				<br>
+				3.	O piso retangular (diferente) precede o Boss.
+				<br>
+				4.	Após matar o Boss continue para sul e leste
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na The Chaos Statue. Reward: <span class="recompensa">Inscribed Ultimatum</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Peculiar Fortunes que podem ser vendidas para <span class="npc">Oswald</span> na cidade.
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Procure e mate <span class="mob">Viper Napuatzi</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Entre no <span class="location">Aggorat</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/aggorat.jpg" target="_blank" class="tooltip">Aggorat</a>
+			<span class="tooltiptext">
+			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Vá para o cetro aonde tem adoradores de Atziri rezando "Atziri, Atziri"
+				<br>
+				2.	Atravesse o arco, obtendo o checkpoint
+				<br>
+				3.	A área se abrirá para a esquerda ou direita, a direção incorreta é um beco sem saída
+				<br>
+				4.	Ao achar rua a correta, faça uma curva imediata para o norte. A rua é bem reta.
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Siga as vozes do Trial of Atziri, passe por elas para encontrar o checkpoint.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a mesa sacrificial.
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Farme o <span class="item">Sacrificial Heart</span> e <span class="item">Sacrificial Dagger</span> se você ainda não dropou.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o checkpoint para voltar a mesa sacrificial e perfure o coração. Reward: <span class="recompensastats"> +2 skill points</span>
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">The Black Chambers</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theblackchambers.jpg" target="_blank" class="tooltip">The Black Chambers</a>
+			<span class="tooltiptext">
+			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
+			<br>
+				Três áreas separadas por pontes
+				<br>
+				1.	Siga pela esquerda, mirando norte
+				<br>
+				2.	Cruze as pontes que aparecem no minimapa
+				<br>
+				3.	Na terceira área, dirija-se para o meio para encontrar o Boss.
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e derrote <span class="mob">Doryani, Royal Thaumaturge</span> dica: Esvazie o inventario antes da luta, pois não tem volta
+    </label>
+    <br>
+    <label class="task-item tooltip">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade, passe pelo gateway para começar o Ato 1 Cruel
+		<span class="tooltiptext"><img src="images/beta.png"></span>
+    </label>
+	<br>
+    <!-- FIM DO ATO 3 -->
+	<h2 id="ato1-cruel">--== ATO 1 Cruel ==--</h2>
+        <div class="task-item location tooltip">
+			Riverbank
+			<span class="tooltiptext">
+			<img src="images/riverbank.jpg" alt="Riverbank" style="max-width: 90%; height: auto;">
+			<br>Mapa Tutorial
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Mate <span class="mob">The Bloated Miller</span> então entre no acampamento.
+        </label>
+		<br>
+        	<div class="task-item location tooltip">
+			Cidade 1 (Acampamento)
+			<span class="tooltiptext">
+			<img src="images/cidade1.jpg" alt="Riverbank" style="max-width: 100%; height: auto;">
+			<br>Sua primeira cidade
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Entregue as missões e siga para <span class="location tooltip">Clearfell</span>.
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/clearfell.jpg" target="_blank" class="tooltip">Clearfell</a>
+			<span class="tooltiptext">
+			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 100%; height: auto;">
+			<br>
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) Procure um baú abandonado.
+        </label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Mate <span class="mob">Beira of the Rotten Pack</span>. Ela está ao norte/nordeste do waypoint. Reward: <span class="recompensastats">10% Cold Resist</span>
+        </label>
+        <br>
+        <label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip"> (OPCIONAL) Mate <span class="mob">The Devourer</span> está dentro do túnel <span class="location">Mud Burrow</span>. Reward: <span class="recompensa">Uncut Skill Gem (Level 11)</span>, <span class="recompensastats">Uncut Spirit Gem (Level 11)</span>
+			<span class="tooltiptext">
+            <img src="images/mudburrow.jpg" alt="Mud Burrow" style="max-width: 100%; height: auto;">
+            <br>
+				Vá pelo centro, o Boss está no lado oposto da entrada
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e siga para <span class="location">The Grelwood</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<span class="tooltiptext">
+			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Reto pro meio, até achar um POnto de Interesse, depois segue alguma diagonal (padrão diamante) pra achar os próximos
+				<br>
+				2.	Saída no lado oposto da entrada
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Obtenha o waypoint e fale com <span class="npc">Una</span> perto da arvore das almas.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre o túnel <span class="location">The Grim Tangle</span>, entre, pegue o waypoint, e volte para The Grelwood.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre a entrada para <span class="location">The Red Vale</span> e entre
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/theredvale.jpg" target="_blank" class="tooltip">The Red Vale</a>
+			<span class="tooltiptext">
+			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
+			<br>Semi-círculo
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre os três obeliscos e obtenha os três itens da missão.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Teleporte para a cidade e fale com <span class="npc">Renly</span> para adquirir <span class="item">Runed Spikes</span>. Dê waypoint para voltar à <span class="location">The Grelwood</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<span class="tooltiptext">
+			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
+			<br>
+				árvore está perto do waypoint!
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            próximo da arvore Invoque e fale com a <span class="npc">Una</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> Espete a árvore com suas <span class="item">Runed Spikes</span> e então fale com <span class="npc">Una</span> novamente
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> Volte para cidade, fale com os <span class="npc">NPCs</span>, dê waypoint para o túnel <span class="location">The Grim Tangle</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/thegrimtangle.jpg" target="_blank" class="tooltip">The Grim Tangle</a>
+			<span class="tooltiptext">
+			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá pelo centro (não abrace as bordas como de costume)
+				<br>
+				2.	Siga pra cima ou esquerda (entrada em baixo = saída em cima) 
+			</span>
+		</div>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (OPCIONAL) <span class="mob">The Rotten Druid</span> Reward: <span class="recompensa">Uncut Support Gem</span>
+        </label>
+		<br>
+		<label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			Encontre a entrada para o <span class="location">Cemetery of The Eternals</span>. 
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/cemeteryoftheeternals.jpg" target="_blank" class="tooltip">Cemetery of The Eternals</a>
+			<span class="tooltiptext">
+			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
+			<br>
+				Circule a área próximo às bordas
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Fale com <span class="npc">Lachlann the Lost</span>, vai pedir 2 chaves para abrir o portão
+        </label>
+        <br>
+        <label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip">Encontre <span class="location">Mausoleum of the Praetor</span>, entre, mate <span class="mob">Draven, Eternal Praetor</span>, colete chave 1/2
+			<span class="tooltiptext">
+            <img src="images/mausoleumofthepraetor.jpg" alt="Mausoleum of The Praetor" style="max-width: 130%; height: auto;">
+            <br>
+				1. Segue meio focado em encontrar a sala do CENTRO, que contém 4 saídas
+				<br>
+				2. Na sala central: Escolha alguma diagonal para seguir, ela está bloqueada por uma PAREDE
+				<br>
+				3. Pegue alguma saída focando em alcançar o outro lado desta PAREDE
+				<br>
+				4. A sala do Boss pode ser detectada por seus quadradinhos (veja o circulo vermelho)
+			</span>
+			</span>
+		</label>
+		<br>
+		<label class="task-item">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<span class="tooltip">Encontre <span class="location">Tomb of the Consort</span> entre, mate <span class="mob">Asinia, Praetor Consort</span>, colete chave 2/2 entre no portal que abriu
+			<span class="tooltiptext">
+            <img src="images/tomboftheconsort.jpg" alt="Mausoleum of The Praetor" style="max-width: 130%; height: auto;">
+            <br>
+				1. Segue meio
+				<br>
+				2. Vai ter alguma curva (esquerda ou direita)
+				<br>
+				3. Boss no lado oposto da entrada
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Retorne as chaves para <span class="mob">Lachlann of Endless Lament</span>, abra o portão e mate ele.
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e siga para <span class="location">Hunting Grounds</span>.
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/huntinggrounds.jpg" target="_blank" class="tooltip">Hunting Grounds</a>
+			<span class="tooltiptext">
+			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
+			<br>
+				Abrace a parede da borda do mapa, evite o meio
+			</span>
+		</div>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e mate <span class="mob">The Crowbell</span>. Reward: <span class="recompensastats"> +2 skill points</span>
+        </label>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Freythorn</span>, obtenha o waypoint, volte pra <span class="location">Hunting Grounds</span>
+        </label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Ogham Farmlands</span>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghamfarmlands.jpg" target="_blank" class="tooltip">Ogham Farmlands</a>
+			<span class="tooltiptext">
+			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá para direita ou esquerda
+				<br>
+				2.	Entre no centro do mapa para pegar o violão de Una dentro da casa
+				<br>
+				3. Continue reto até bater na parede, e siga abraçando a borda
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre <span class="item">Una's Lute</span>. Geralmente está no centro do mapa, dentro da casa. Entregue para <span class="npc">Una</span> na cidade. Reward: <span class="recompensastats"> +2 skill points</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <s>(OPCIONAL NO CRUEL) Encontre e mate <span class="mob">Vargir The Feral Mutt</span> no círculo de colheita. Reward: <span class="recompensa"> ???</span> </s>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e entre em <span class="location">Ogham Village</span> , pegue o waypoint , <s>use-o para ir para <span class="location">Freythorn</span> </s>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/freythorn.jpg" target="_blank" class="tooltip">Freythorn</a>
+			<span class="tooltiptext">
+			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Vá pelas bordas
+				<br>
+				2.	Encontre o ritual final (do Boss)
+				<br>
+				3.	Ele solta névoa indicando a direção dos rituais menores
+			</span>
+		</div>
+        <br>
+        <label class="task-item tooltip">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			<s>Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensastats"> +30 spirit</span>, <span class="recompensa"> level 4 Uncut Spirit Gem </s>
+			<span class="tooltiptext">
+			Debuff VERMELHO: fique PARADO para não tomar freeze
+			<br>
+			<img src="images/kinginthemists.jpg" alt="The King in the Mists" style="max-width: 100%; height: auto;">
+			</span>
+		</label>
+		<br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <s> TP para a cidade e waypoint para <span class="location">Ogham Village</span> </s>
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghamvillage.jpg" target="_blank" class="tooltip">Ogham Village</a>
+			<span class="tooltiptext">
+			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Abrace a parede à sua direita e siga NORTE.
+				<br>
+				2.	Se já está no Boss e ainda não encontrou as Smithing Tools, volte para a entrada (use o checkpoint) e faça o caminho reverso.
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <s>(OPCIONAL NO CRUEL) Se for seu primeiro personagem da liga encontre <span class="item">Smithing Tools</span> </s>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Encontre e mate <span class="mob">The Executioner</span>. Reward: <span class="recompensa">Uncut Support Gem Level 2</span>, <span class="recompensa">Uncut Skill Gem Level 12</span>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Vá para as muralhas <span class="location">The Manor Ramparts</span> 
+        </label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/themanorramparts.jpg" target="_blank" class="tooltip">The Manor Ramparts</a>
+			<span class="tooltiptext">
+			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Formato de U
+				<br>
+				2.	Gallows está perto da borda, pouco antes da Mansão
+			</span>
+		</div>
+		<br>
+        <label class="task-item tooltip">
+			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+			Encontre a entrada para a mansão <span class="location">Ogham Manor</span>. Fica na direção oposta do waypoint 
+			<span class="tooltiptext">
+			<img src="images/oghammanorentrada.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			</span>
+		</label>
+        <br>
+        <div class="task-item location tooltip">
+			<a href="images/oghammanor.jpg" target="_blank" class="tooltip">Ogham Manor</a>
+			<span class="tooltiptext">
+			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Direita/Nordeste, até atravessar a ponte (buraco de vista pro Boss)
+				<br>
+				2.	Norte para matar Candlemass, depois Nordeste para ao próximo nível.
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats"> +maximum life</span>
+			<span class="tooltiptext">
+			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Direita/Nordeste, até atravessar a ponte (buraco de vista pro Boss)
+				<br>
+				2.	Norte para matar Candlemass, depois Nordeste para ao próximo nível.
+			</span>
+			</span>
+		</label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e desça as escadas.
+			<span class="tooltiptext">
+			<img src="images/oghammanor1.jpg" alt="Ogham Manor 1" style="max-width: 130%; height: auto;">
+			<br>
+				Vá na direção oposta à entrada, atravesse a ponte
+			</span>
+			</span>
+		</label>
+        <br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <span class="tooltip">Encontre e desça as escadas (denovo).
+			<span class="tooltiptext">
+			<img src="images/oghammanor2.jpg" alt="Ogham Manor 2" style="max-width: 130%; height: auto;">
+			<br>
+				Pegue o elevador para enfrentar o Boss
+			</span>
+			</span>
+		</label>
+        <br>
+        	<div class="task-item location tooltip">
+			Cidade 1 (Acampamento)
+			<span class="tooltiptext">
+			<img src="images/cidade1.jpg" alt="Riverbank" style="max-width: 100%; height: auto;">
+			<br>Sua primeira cidade
+			</span>
+		</div>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            <s>(OPCIONAL NO CRUEL) Se for o seu primeiro personagem da liga: Fale com <span class="npc">Renly</span> para entregar as <span class="item">Smithing Tools</span>. Reward: <span class="recompensa"> ???</span> </s>
+        </label>
+        <br>
+        <label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            Fale com <span class="npc">The Hooded One</span> para ir ao Ato 2 Cruel.
+        </label>
+    <!-- FIM DO ATO 1 Cruel -->
+
+    <!-- Início do ATO 2 Cruel -->
+    <h2 id="ato2-cruel">--== ATO 2 Cruel ==--</h2>
+    <div class="task-item location tooltip">
+		<a href="images/vastirioutskirts.jpg" target="_blank" class="tooltip">Vastiri Outskirts</a>
+		<span class="tooltiptext">
+		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
+		<br>
+			1.	Se a saída para o deserto for para o leste --→ abrace a parede da direita
+			<br>
+			2.	Se a saída para o deserto for para o oeste ←-- abrace a parede da esquerda
+			<br>
+			3.	Continue até encontrar um desfiladeiro estreito que leva ao boss
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Rathbreaker</span>.  Reward: <span class="recompensa">Uncut Skill Gem Level 13</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span> e use o mapa do deserto para ir a <span class="location">Halani Gates</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Lá a NPC vai te falar que a entrada está bloqueada, então use o mapa do deserto para ir à <span class="location">Mawdun Quarry</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/mawdunquarry.jpg" target="_blank" class="tooltip">Mawdun Quarry</a>
+			<span class="tooltiptext">
+			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Abrace uma parede e segue as pontes
+				<br>
+				2.	Forma de S, forma de Z ou loop de cima para baixo.
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e pegue a entrada para <span class="location">Mawdun Mine</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/mawdunmine.jpg" target="_blank" class="tooltip">Mawdun Mine</a>
+			<span class="tooltiptext">
+			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Mapa em formato de diamante
+				<br>
+				2.	Alcance a rua principal
+				<br>
+				3.	Siga sempre para o Norte
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Rudja, the Dread Engineer</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Liberte e fale com <span class="npc">Risu, Faridun Defector</span>, depois portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir a <span class="location">The Halani Gates</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Sekhema Asala</span> nos portões, volte para a caravana, fale com <span class="npc">Risu</span> novamente e depois com <span class="npc">Sekhema Asala</span> novamente.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Traitor's Passage</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/traitorspassage.jpg" target="_blank" class="tooltip">Traitor's Passage</a>
+			<span class="tooltiptext">
+			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Layout 1: Vá no sentido oposto da entrada até achar uma bifurcação no Lore Book, para achar Basala siga os papéis na parede
+				<br>
+				2.	Layout 2: Se logo de início você encontrar a escadaria "Six Sisters", então Basala está próxima! Na sua primeira esquerda ou direita
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s>(OPCIONAL NO CRUEL) Encontre e mate <span class="mob">Basala</span>, dropa ??? <span class="recompensa">???</span> </s>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Halani Gates</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thehalanigates.jpg" target="_blank" class="tooltip">The Halani Gates</a>
+			<span class="tooltiptext">
+			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Sentido oposto da entrada, geralmente para sudeste
+				<br>
+				2.	Padrão S (vai para um lado e para o outro, zigue-zague)
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Jamanra, the Risen King</span>. Fique perto do cânion. Atravesse o cânion 3 vezes para encontrar o boss.
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Persiga o boss: descendo as escadas, e indo até o canto inferior direito do deserto, depois volte para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s> (OPCIONAL NO CRUEL) Use o mapa do deserto para ir ao <span class="location">Trial of Sekhemas</span> </s>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Pegue o waypoint, fale os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">Keth</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/keth.jpg" target="_blank" class="tooltip">Keth</a>
+			<span class="tooltiptext">
+			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Siga pela borda até achar Kabala, Checkpoint, e a saída no lado oposto do mapa.
+				<br>
+				2.	Se não encontrá-la, retorne à entrada via checkpoint e tente novamente por outro lado
+				<br>
+				3.	Se não encontra-la, procure pelo meio, próximo de um terreno que parece com o rosto do Homer Simpson
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Kabala, Constrictor Queen</span>. Reward: <span class="recompensastats"> +2 skill points</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate cobras até encontrar o item <span class="item">Kabala Clan Relic</span> (1/2 relics)
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">The Lost City</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thelostcity.jpg" target="_blank" class="tooltip">The Lost City</a>
+			<span class="tooltiptext">
+			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Vá para as diagonais para encontrar a ponte em V
+				<br>
+				2.	A parte final tem formato de asa
+			</span>
+		</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na tumba dourada e sobreviva. Reward: <span class="recompensastats">Uncut Spirit Gem lvl 13</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada e vá para <span class="location">Buried Shrines</span>
+    </label>
+	<br>
+	<div class="task-item location tooltip">
+			<a href="images/buriedshrines.jpg" target="_blank" class="tooltip">Buried Shrines</a>
+			<span class="tooltiptext">
+			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
+			<br>
+				1.	Duas seções retangulares separadas por pontes
+				<br>
+				2.	Layout 1 - Ponte Sul para o Norte: Siga pro norte.
+				<br>
+				3.	Layout 2 - Ponte Norte para o Sul: Siga pro sul depois leste.
+				<br>
+				4.	Testar: full esquerda/direita para encontrar Elemental Shrine com anel, depois NNE.
+			</span>
+	</div>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na Elemental Shrine para ganhar um anel. (Recomendado Ruby Ring, de fire resist).
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
+    </label>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e siga para <span class="location">Heart of Keth</span>
+    </label>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Azarian, the Forsaken Son</span> em <span class="location">Buried Shrines</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Halani, the Water Goddess</span>, colete as cinzas, queime a deusa, colete a essência da água. Reward: <span class="recompensastats">level 3 Uncut Support Gem</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Mastodon Badlands</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/mastodonbadlands.jpg" target="_blank" class="tooltip">Mastodon Badlands</a>
+			<span class="tooltiptext">
+			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Abrace a parede na direção oposta ao waypoint
+				<br>
+				2.	Segue pela borda
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Bone Pits</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thebonepits.jpg" target="_blank" class="tooltip">The Bone Pits</a>
+			<span class="tooltiptext">
+			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Ao passar pelo arco de ossos continue na mesma direção
+				<br>
+				2.	Lado oposto do mapa
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Iktab, the Deathlord</span> e <span class="mob">Ekbab, Ancient Steed</span> (estão juntos) e colete <span class="item">Mastodon Tusks</span> Reward: <span class="recompensastats">Uncut Spirit Gem (Level 13)</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate Hienas até encontrar o item <span class="item">Sun Clan Relic</span> (2/2 relics)
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        TP de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para ir a <span class="location">Valley of the Titans</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/valleyofthetitans.jpg" target="_blank" class="tooltip">Valley of the Titans</a>
+			<span class="tooltiptext">
+			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Próximo a entrada, no centro, encontre a entrada de Titan Grotto (a camera dá zoomout)
+				<br>
+				2.	Abrace alguma parede e siga pelas bordas
+				<br>
+				3.	O último selo pode estar no centro, no meio do desfiladeiro
+				<br>
+				4.	Por fim, use o checkpoint pra voltar para a entrada de Titan Grotto
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e ative 3 selos antigos.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre o altar clique no Medallion e coloque as duas relíquias. Reward: <span class="recompensastats"> 30% Increased Charm charges gained</span> ou <span class="recompensastats"> 15% Increased Life Recovery from Flasks</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e pegue a entrada para <span class="location">The Titan Grotto</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thetitangrotto.jpg" target="_blank" class="tooltip">The Titan Grotto</a>
+			<span class="tooltiptext">
+			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Formato de retângulo, Boss está no lado oposto da entrada
+				<br>
+				2.	Deve pegar várias curvas, portanto não se apegue as bordas do mapa
+				<br>
+				Dica:	Posicione-se na mão direita do Boss pra desviar de 2 mecânicas
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Zalmarath, the Colossus</span>, depois volte para a cidade. Reward: <span class="recompensa"> level 13 Uncut Skill Gem</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Zarka</span>, depois com <span class="npc">Sekhema Asala</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para viajar para <span class="location">Halani Gates</span>.
+    </label>
+    <br>
+    <label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Vá para a frente da caravana e sopre o shofar.
+		<span class="tooltiptext">
+        <img src="images/shofar.jpg" alt="Shofar" style="max-width: 100%; height: auto;">
+		</span>
+	</label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o mapa do deserto para viajar até <span class="location">Deshar</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/deshar.jpg" target="_blank" class="tooltip">Deshar</a>
+			<span class="tooltiptext">
+			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Duas áreas. A segunda é cheia de construções.
+				<br>
+				2.	O corpo está ao redor de alguma construção, no lado de fora.
+				<br>
+				3.	Saída fica no lado oposto à entrada do mapa, as vezes dentro de uma construção.
+			</span>
+		</div>
+    <br>
+	<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Clique na montaria abandonada "Abandoned Rhoa" para iniciar a quest. Procure um cadáver "Fallen Dekhara" e colete <span class="item">Final Letter</span>. Entregue para <span class="npc">Shambrin</span> na cidade. Reward: <span class="recompensastats"> +2 skill points</span>
+		<span class="tooltiptext">
+        <img src="images/fallendekhara.jpg" alt="Fallen Dekhara" style="max-width: 100%; height: auto;">
+		</span>
+	</label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Em Watchful Twins sobreviva a emboscada de 2 pássaros raros.
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para o <span class="location">Path of Mourning</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/pathofmourning.jpg" target="_blank" class="tooltip">Path of Mourning</a>
+			<span class="tooltiptext">
+			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
+			<br>
+					Sentido oposto da entrada, sempre alternando a rota ao passar por dentro de 3 construções, exemplo:
+				<br>
+				Layout 1:	Desce, 3, sobe, 3, desce, 3, sobe
+				<br>
+					ou 
+				<br>
+				Layout 2:	Sobe, 3, desce, 3, sobe, 3, desce 
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">The Spires of Deshar</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thespiresofdeshar.jpg" target="_blank" class="tooltip">The Spires of Deshar</a>
+			<span class="tooltiptext">
+			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Vá para o lado oposto da entrada
+				<br>
+				2.	Sisters of Garukhan é cercada por 4 plataformas ao seu redor, formando um G
+				<br>
+				3.	Sisters of Garukhan sempre tem acesso por baixo ou direita
+			</span>
+		</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Tor Gul, the Defiler</span>
+    </label>
+	<br>
+    <label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Clique no altar Sisters of Garukhan. Reward: <span class="recompensastats">+10% Lightning Resistance</span>
+		<span class="tooltiptext">
+        <img src="images/sistersofgarukhan.jpg" alt="Sisters of Garukhan" style="max-width: 130%; height: auto;">
+		</span>
+	</label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">The Dreadnought</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thedreadnought.jpg" target="_blank" class="tooltip">The Dreadnought</a>
+			<span class="tooltiptext">
+			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
+			<br>
+				Para ambos os mapas é só ir no sentido oposto da entrada, evite as bordas
+				<br>
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">Dreadnought Vanguard</span>, depois encontre e mate <span class="mob">Jamanra, the Abomination</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 2 (Caravana)
+		<span class="tooltiptext">
+		<img src="images/cidade2.jpg" alt="The Ardura Caravan" style="max-width: 100%; height: auto;">
+		<br>Sua segunda cidade (The Ardura Caravan)
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Saia da Caravana e fale com <span class="npc">The Hooded One</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a Caravana e fale com <span class="npc">Sekhema Asala</span> para ir para o Ato 3 Cruel
+    </label>
+    <!-- FIM DO ATO 2 Cruel -->
+
+    <!-- Início do ATO 3 Cruel -->
+    <h2 id="ato3-cruel">--== ATO 3 Cruel ==--</h2>
+    <div class="task-item location tooltip">
+			<a href="images/sandsweptmarsh.jpg" target="_blank" class="tooltip">Sandswept Marsh</a>
+			<span class="tooltiptext">
+			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
+			<br>
+				1.	Segue reto, um pouco para esquerda ou direita, até obter o checkpoint do acampamento zigurate no lado oposto do mapa
+				<br>
+				2.	Depois, continue correndo ao longo da parede até encontrar Azak Campfire (basket loot)
+			</span>
+	</div>
+    <br>
+	<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Looteie a cesta em Orok/Azak Campfire protegida por <span class="mob">Garkam, Ranbu's Maul</span> e <span class="mob">Ranbu the Pale Shaman</span>. Reward: <span class="recompensastats">Lesser Jeweller's Orb</span>
+		<span class="tooltiptext">
+        <img src="images/basket.jpg" alt="Basket" style="max-width: 120%; height: auto;">
+		</span>
+	</label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para o <span class="location">Ziggurat Encampment</span> (cidade).
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			Cidade 3 (Ziggurat Encampment)
+			<span class="tooltiptext">
+			<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+			<br>Sua terceira cidade
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com todos os <span class="npc">NPCs</span> e entre em <span class="location">Jungle Ruins</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jungleruins.jpg" target="_blank" class="tooltip">Jungle Ruins</a>
+			<span class="tooltiptext">
+			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Abrace uma parede e de uma volta pela borda
+				<br>
+				2.	Gorila deve estar do meio pra frente
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. <span class="recompensastats"> Reward: +2 Skill Points</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Obtenha o waypoint, não entre ainda nas criptas
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre <span class="location">Infested Barrens</span>, entre, pegue o waypoint, use-o para voltar à <span class="location">Jungle Ruins</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Próximo ao waypoint: Encontre e entre em <span class="location">The Venom Crypts</span> 
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thevenomcrypts.jpg" target="_blank" class="tooltip">The Venom Crypts</a>
+			<span class="tooltiptext">
+			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
+			<br>
+				1.	Circunde as paredes internas, se não achar vá pelas bordas
+			</span>
+	</div>
+	<br>
+		<label class="task-item tooltip">
+		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+		Encontre o cadáver e colete o <span class="item">Corpse-snake Venom</span>, entregue para <span class="npc">Servi</span> na cidade. Reward: <span class="recompensastats"> Venom Draught of ...</span>
+		<span class="tooltiptext">
+        Após entregar escolha um. Não poderá ser alterada depois!
+        <img src="images/draughts2.jpg" alt="Venom Draught" style="max-width: 200%; height: auto;">
+		</span>
+	</label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Waypoint para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<span class="tooltiptext">
+			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
+			<br>
+				Vá pelas bordas
+				<br>
+			</span>
+	</div>
+    <br>
+	Colete waypoint daqui e de áreas adjacentes (não importa a ordem): 
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">Chimeral Wetlands</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Azak Bog</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Com os 3 waypoints obtidos, siga para <span class="location">The Azak Bog</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theazakbog.jpg" target="_blank" class="tooltip">The Azak Bog</a>
+			<span class="tooltiptext">
+			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Mob está no quadrante nordeste
+				<br>
+				2.	Fogueiras ficam no centro
+				<br>
+				3.	Atenção: o mapa pode estar rotacionado! Ajuste de acordo com a entrada
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Opcional: Encontre o ritual Flameskin e ative todos, dá 25% de resistência a fogo e raridade pelo resto do mapa.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Ignagduk, the Bog Witch</span>. Reward: <span class="recompensastats">+40 spirit</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para a cidade entregar quests, waypoint para <span class="location">Chimeral Wetlands</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/chimeralwetlands.jpg" target="_blank" class="tooltip">Chimeral Wetlands</a>
+			<span class="tooltiptext">
+			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
+			<br>
+					Abrace a parede da esquerda e segue pela borda
+				<br>
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s>(OPCIONAL NO CRUEL) Encontre o templo/<span class="location"> Trial of Chaos</span> pegue seu waypoint e volte</s>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Xyclucian, the Chimera</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Entre em <span class="location">Jiquani's Machinarium</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jiquanismachinarium.jpg" target="_blank" class="tooltip">Jiquani's Machinarium</a>
+			<span class="tooltiptext">
+			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
+			<br>
+				1.	O primeiro small soul core está em alguma sala próxima, esquerda/direita
+				<br>
+				2.	Os demais estão nas laterais da linha principal, atravesse pelas laterais mas focado nela
+				<br>
+				3.	Blackjaw está no lado oposto da entrada em alguma lateral esquerda/direita
+				<br>
+				4.	A saída para Jiquani's Sanctum está diretamente oposta a entrada deste mapa
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre o primeiro <span class="item">Small Soul Core</span> e abra a porta.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre mais dois <span class="item">Small Soul Core</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">Blackjaw, the Remnant</span>. Reward: <span class="recompensastats">+10% Fire Resist</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">Jiquani's Sanctum</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/jiquanissanctum.jpg" target="_blank" class="tooltip">Jiquani's Sanctum</a>
+			<span class="tooltiptext">
+			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
+			<br>
+				Não use checkpoint com soul core no inventario!
+				<br>
+				speedrun:	Pode usar respawn at checkpoint para spawnar medium core próximo do gerador
+				<br>
+				speedrun:	Pode dar TP antes de ativar o segundo gerador e voltar via waypoint, mas ainda tem que esperar animação
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Pegue o waypoint.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre 2 <span class="item">Medium Soul Core</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ative 2 geradores. Um em cada sala, depois volte pra <span class="npc">Alva</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Mate <span class="mob">Zicoatl, Warden of the Core</span> e saqueie <span class="item">Large Soul Core</span>. Reward: <span class="recompensa">Uncut Spirit Gem</span>
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Use Corruption Altar para corromper um item gratuitamente
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Volte para o waypoint de <span class="location">Infested Barrens</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<span class="tooltiptext">
+			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
+			<br>
+				Vá pelas bordas
+				<br>
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Insira <span class="item">Large Soul Core</span> e entre em <span class="location">The Matlan Waterways</span>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thematlanwaterways.jpg" target="_blank" class="tooltip">The Matlan Waterways</a>
+			<span class="tooltiptext">
+			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
+			<br>
+				
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ative todas as alavancas para passar pelo mapa, depois ative a grande no final.
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Mate <span class="mob">Narag of the Vile Word</span>. Reward: <span class="recompensa">arma rara</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Tp de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			Cidade 3 (Ziggurat Encampment)
+			<span class="tooltiptext">
+			<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+			<br>Sua terceira cidade
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Desça as escadas perto do poço / <span class="npc">The Hooded One</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span>, entre em <span class="location">The Drowned City</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/thedrownedcity.jpg" target="_blank" class="tooltip">The Drowned City</a>
+			<span class="tooltiptext">
+			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
+			<br>
+				1.	A partir do waypoint siga Nordeste até bater na parede
+				<br>
+				2.	Vire a direita, depois esquerda (reto até obter o checkpoint)
+				<br>
+				3.	Esquerda para molten vault ou direita+esquerda para Apex of Filth
+				<br>
+			</span>
+	</div>
+    <br>
+	<s>(OPCIONAL NO CRUEL) Pule The Molten Vault se não for o seu primeiro personagem na liga. Colete waypoint daqui e de áreas adjacentes (não importa a ordem):</s>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s>(OPCIONAL NO CRUEL) Ao encontrar a entrada para <span class="location">The Molten Vault</span>. Entre, pegue o waypoint, e volte para <span class="location">The Drowned City</span> </s>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Ao encontrar a entrada para <span class="location">The Apex of Filth (quarto do ovelhera)</span>. Entre, pegue o waypoint, e volte para <span class="location">The Drowned City</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s>(OPCIONAL NO CRUEL) Com os 2 waypoints obtidos, Waypoint para <span class="location">The Molten Vault</span> </s>
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/themoltenvault.jpg" target="_blank" class="tooltip">The Molten Vault</a>
+			<span class="tooltiptext">
+			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Após ativar a alavanca siga para o leste/nordeste, sempre subindo
+				<br>
+				2.	Ao chegar no limite, foque sudeste
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        <s>(OPCIONAL NO CRUEL) Encontre e mate <span class="mob">Mektul, the Forgemaster</span>, depois fale com <span class="npc">Oswald</span> na cidade. Reward: <span class="recompensa"> Mesa de trabalho (2/2)</span> </s>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Vá para <span class="location">The Apex of Filth (quarto do ovelhera)</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theapexoffilth.jpg" target="_blank" class="tooltip">The Apex of Filth</a>
+			<span class="tooltiptext">
+			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
+			<br>
+				dica rápida:	abrace a parede interna (longe das bordas)
+				<br>
+				1.	O caminho correto é para a esquerda/direita, com uma extremidade sem saída. (Boss está do outro lado)
+				<br>
+				2.	Segue acompanhando o rio podre, ignore as pequenas pontes por enquanto
+				<br>
+				3.	Continue reto até não poder mais, então atravesse para o outro lado
+				<br>
+				4.	Vá reto e faça um loop abraçando a parede interna (longe das bordas) como se quisesse voltar para o waypoint
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Jogue 3 cogumelos diferentes no caldeirão para ganhar flasks de vida e mana
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e mate <span class="mob">The Queen of Filth</span>, TP de volta para a cidade.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+		Cidade 3 (Ziggurat Encampment)
+		<span class="tooltiptext">
+		<img src="images/cidade3.jpg" alt="Ziggurat Encampment" style="max-width: 100%; height: auto;">
+		<br>Sua terceira cidade
+		</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Desça as escadas perto do poço / <span class="npc">The Hooded One</span> novamente, e entre em <span class="location">Temple of Kopec</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/templeofkopec.jpg" target="_blank" class="tooltip">Temple of Kopec</a>
+			<span class="tooltiptext">
+			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
+			<br>
+				Primeiro andar:	Procure a saída em um dos 3 cantos, use respawn to checkpoint para voltar, ou caminhe.
+				<br>
+				Segundo andar:	Pule por cima da rachadura no chão (skill de Mace: Leap Slam), ou dê a volta.
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Suba as escadas duas vezes, depois mate <span class="mob">Ketzuli, High Priest of the Sun</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Fale com <span class="npc">Alva</span> para subir o elevador.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Passe pelo gateway, depois desça as escadas novamente para entrar em <span class="location">Utzaal</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/utzaal.jpg" target="_blank" class="tooltip">Utzaal</a>
+			<span class="tooltiptext">
+			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
+			<br>
+				Mesmo layout de The Drowned City:
+				<br>
+				1.	A partir do waypoint siga reto (Nordeste) até bater na parede
+				<br>
+				2.	Vire a direita, esquerda(checkpoint), direita, esquerda
+				<br>
+				3.	O piso retangular (diferente) precede o Boss.
+				<br>
+				4.	Após matar o Boss continue para sul e leste
+			</span>
+	</div>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Clique na The Chaos Statue. Reward: <span class="recompensa">Inscribed Ultimatum(?)confirmar</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Procure e mate <span class="mob">Viper Napuatzi</span>.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a entrada para <span class="location">Aggorat</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/aggorat.jpg" target="_blank" class="tooltip">Aggorat</a>
+			<span class="tooltiptext">
+			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
+			<br>
+				1.	Vá para o cetro aonde tem adoradores de Atziri rezando "Atziri, Atziri"
+				<br>
+				2.	Atravesse o arco, obtendo o checkpoint
+				<br>
+				3.	A área se abrirá para a esquerda ou direita, a direção incorreta é um beco sem saída
+				<br>
+				4.	Ao achar rua a correta, faça uma curva imediata para o norte. A rua é bem reta.
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Siga as vozes do Trial of Atziri, passe por elas para encontrar o checkpoint.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre a mesa sacrificial.
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Farme o <span class="item">Sacrificial Heart</span> e <span class="item">Sacrificial Dagger</span> se você ainda não dropou.
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Use o checkpoint para voltar a mesa sacrificial e perfure o coração. Reward: <span class="recompensastats"> +2 skill points</span>
+    </label>
+    <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">The Black Chambers</span>.
+    </label>
+    <br>
+    <div class="task-item location tooltip">
+			<a href="images/theblackchambers.jpg" target="_blank" class="tooltip">The Black Chambers</a>
+			<span class="tooltiptext">
+			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
+			<br>
+				Três áreas separadas por pontes
+				<br>
+				1.	Siga pela esquerda, mirando norte
+				<br>
+				2.	Cruze as pontes que aparecem no minimapa
+				<br>
+				3.	Na terceira área, dirija-se para o meio para encontrar o Boss.
+			</span>
+	</div>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e derrote <span class="mob">Doryani, Royal Thaumaturge</span>
+    </label>
+    <br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Portal de volta para a cidade, Fale com <span class="npc">Doryani</span> . GG.
+    </label>
+	<br>
+    <!-- FIM DO ATO 3 Cruel -->
+    </div>
+
+    <div class="made-by">Feito por grimgamer9 <img src="images/swag.png" alt="swag"></div>
+
+    <script>
+        let isDarkMode = false;
+        let tooltipsEnabled = true;
+
+        function toggleMode() {
+            const body = document.body;
+            const modeToggleButton = document.querySelector('.mode-toggle');
+            isDarkMode = !isDarkMode;
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                modeToggleButton.textContent = "Modo Claro";
+            } else {
+                body.classList.remove('dark-mode');
+                modeToggleButton.textContent = "Modo Escuro";
+            }
+
+            const titleElements = document.querySelectorAll('h2');
+            titleElements.forEach(title => {
+                if (isDarkMode) {
+                    title.style.color = 'lightcyan';
+                } else {
+                    title.style.color = 'var(--text-color)';
+                }
+            });
+        }
+
+        function toggleTooltips() {
+            tooltipsEnabled = !tooltipsEnabled;
+            const toggleButton = document.querySelector('.toggle-tips');
+            toggleButton.textContent = tooltipsEnabled ? "Dicas Flutuantes: ON" : "Dicas Flutuantes: OFF";
+        }
+
+        function showTooltip(event) {
+            if (tooltipsEnabled) {
+                const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+                if (tooltipText) {
+                    tooltipText.style.visibility = "visible";
+                    tooltipText.style.opacity = "1";
+                }
+            }
+        }
+        
+        function hideTooltip(event) {
+            const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+            if (tooltipText) {
+                tooltipText.style.visibility = "hidden";
+                tooltipText.style.opacity = "0";
+            }
+        }
+
+        document.querySelectorAll('.tooltip').forEach(tooltip => {
+            tooltip.addEventListener('mouseover', showTooltip);
+            tooltip.addEventListener('mouseout', hideTooltip);
+        });
+
+    </script>
+</body>
+</html>
