@@ -216,37 +216,40 @@
     }
 
     @media (max-width: 600px) {
-        nav {
-            width: 100%; /* Ocupa a largura total */
-            position: sticky;
-            top: 0;
-            flex-direction: column;
-            align-items: flex-start; /* Alinhamento adequado dos itens */
-        }
-
-        .content {
-            padding: 10px; /* Reduz o padding do conteúdo para dispositivos móveis */
-        }
-
-        .task-item {
-            padding: 12px; /* Aumente o padding para itens em mobile */
-            font-size: 0.9em; /* Ajuste o tamanho da fonte para melhor legibilidade */
-        }
-
-        h1 {
-            font-size: 1.5em; /* Cooler size em mobile */
-        }
-
-        h2 {
-            font-size: 1.3em; /* Cooler size em mobile */
-        }
-
-        /* Adiciona um espaçamento interno em task-item para facilitar o toque */
-        .task-item label {
-            display: block; /* Faz o label ocupar a largura total */
-            cursor: pointer; /* Muda o cursor para indicar um item clicável */
-        }
+    body {
+        flex-direction: column; /* Estrutura em coluna */
     }
+
+    nav {
+        width: 100%; /* A largura do nav ocupa 100% */
+        position: relative; /* Ajuste esta propriedade se o sticky não for necessário */
+        flex-direction: column; /* Itens em coluna */
+        align-items: flex-start; /* Alinhamento dos itens na esquerda */
+        box-shadow: none; /* Remove a sombra para simplicidade */
+    }
+
+    nav ul {
+        width: 100%; /* A ul ocupa a largura total do painel */
+        padding: 0; /* Remove algum padding se estiver causando problemas */
+        list-style: none;
+    }
+
+    .content {
+        flex-grow: 1; /* Permite que o conteúdo use o espaço restante */
+        padding: 10px; /* Ajusta o padding em torno do conteúdo */
+        overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
+        max-height: calc(100vh - 60px); /* Ajusta altura com consideração para nav */
+    }
+
+    .task-item {
+        padding: 10px; /* Ajuste do padding */
+        font-size: 14px; /* Tamanho da fonte para legibilidade em dispositivos móveis */
+    }
+
+    h1, h2 {
+        text-align: center; /* Centraliza o texto em dispositivos móveis */
+    }
+}
 </style>
 </head>
 <body>
