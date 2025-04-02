@@ -215,6 +215,40 @@
         margin-left: 5px; 
     }
 
+.tooltip.toggle-tips {
+        display: block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 2px solid transparent; 
+        transition: border-color 0.3s, background-color 0.3s; 
+    }
+
+    .tooltip.toggle-tips:hover {
+        background-color: #165e55;
+        border-color: #F0E68C; 
+    }
+
+.tooltip.toggle-tips {
+        display: block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 2px solid transparent; 
+        transition: border-color 0.3s, background-color 0.3s; 
+    }
+
+    .tooltip.toggle-tips:hover {
+        background-color: #165e55;
+        border-color: #F0E68C; 
+    }
+
     @media (max-width: 800px) {
         body {
             flex-direction: column; /* Estrutura em coluna */
@@ -271,7 +305,13 @@
     background-color: #165e55; /* Cor ao passar o mouse (ajuste conforme preferir) */
 }
 
-
+.close-tooltip {
+    cursor: pointer; /* Muda o cursor para indicar que é clicável */
+    float: right; /* Move o X para a direita */
+    font-size: 1.2em; /* Tamanho do "X" */
+    margin-left: 5px; /* Espaço entre o conteúdo da tooltip e o "X" */
+    color: #f00; /* Cor do "X", vermelho */
+}
 </style>
 </head>
 <body>
@@ -337,6 +377,7 @@
 		<div class="task-item location tooltip">
 			Riverbank
 			<span class="tooltiptext">
+			<span class="close-tooltip" onclick="closeTooltip(event)">×</span> <!-- Adiciona um X para fechar -->
 			<img src="images/riverbank.jpg" alt="Riverbank" style="max-width: 90%; height: auto;">
 			<br>Mapa Tutorial
 			</span>
@@ -3330,9 +3371,64 @@
 
 
 <script>
-    let isDarkMode = false;
-    let tooltipsEnabled = true;
+    let isDarkMode = false; // Inicializa o modo escuro
+    let tooltipsEnabled = true; // Inicializa a variável de controle de tooltips
 
+    // Função para mostrar ou esconder tooltips
+    function toggleTooltip(event) {
+        if (!tooltipsEnabled) return; // Impede a exibição da tooltip se as dicas flutuantes estiverem desativadas.
+
+        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+        if (tooltipText) {
+            const isVisible = tooltipText.style.visibility === "visible"; 
+
+            // Escondendo todas as tooltips
+            document.querySelectorAll('.tooltip .tooltiptext').forEach(t => {
+                t.style.visibility = "hidden";
+                t.style.opacity = "0";
+            });
+
+            // Mostrar a tooltip atual se não estava visível
+            if (!isVisible) {
+                tooltipText.style.visibility = "visible";
+                tooltipText.style.opacity = "1";
+            }
+        }
+    }
+
+    // Função para alternar o estado de tooltips
+    function toggleTooltips() {
+        tooltipsEnabled = !tooltipsEnabled; // Alterna o estado de tooltips
+        const toggleButton = document.querySelector('.toggle-tips');
+        
+        // Atualiza o texto do botão baseado no estado atual
+        if (tooltipsEnabled) {
+            toggleButton.textContent = "Dicas Flutuantes: ON";
+            initializeTooltips(); // Re-inicializa as tooltips, permitindo que sejam clicadas novamente
+        } else {
+            toggleButton.textContent = "Dicas Flutuantes: OFF";
+            // Remove event listeners e esconde tooltips
+            const tooltips = document.querySelectorAll('.tooltip');
+            tooltips.forEach(tooltip => {
+                tooltip.removeEventListener('click', toggleTooltip);
+                const tooltipText = tooltip.querySelector('.tooltiptext');
+                if (tooltipText) {
+                    tooltipText.style.visibility = "hidden"; // Esconde as tooltips
+                    tooltipText.style.opacity = "0";
+                }
+            });
+        }
+    }
+
+    // Inicializa os ouvintes de eventos para cada tooltip
+    function initializeTooltips() {
+        const tooltips = document.querySelectorAll('.tooltip');
+        tooltips.forEach(tooltip => {
+            tooltip.addEventListener('click', toggleTooltip); // Usando `click` para mobile
+        });
+    }
+
+    // Função para alternar entre modo claro e escuro
     function toggleMode() {
         const body = document.body;
         const modeToggleButton = document.querySelector('.mode-toggle');
@@ -3348,53 +3444,22 @@
 
         const titleElements = document.querySelectorAll('h2');
         titleElements.forEach(title => {
-            if (isDarkMode) {
-                title.style.color = 'lightcyan';
-            } else {
-                title.style.color = 'var(--text-color)';
-            }
+            title.style.color = isDarkMode ? 'lightcyan' : 'var(--text-color)';
         });
     }
 
-    function toggleTooltips() {
-        tooltipsEnabled = !tooltipsEnabled;
-        const toggleButton = document.querySelector('.toggle-tips');
-        toggleButton.textContent = tooltipsEnabled ? "Dicas Flutuantes: ON" : "Dicas Flutuantes: OFF";
-
-        // Adiciona ou remove os ouvintes de eventos conforme necessário
-        if (tooltipsEnabled) {
-            document.querySelectorAll('.tooltip').forEach(tooltip => {
-                tooltip.addEventListener('click', toggleTooltip); // Mudei de mouseover para click
-            });
-        } else {
-            document.querySelectorAll('.tooltip').forEach(tooltip => {
-                tooltip.removeEventListener('click', toggleTooltip);
-            });
-        }
-    }
-
-    function toggleTooltip(event) {
-        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
-        if (tooltipText) {
-            const isVisible = tooltipText.style.visibility === "visible";
-            // Esconder todas tooltips
-            document.querySelectorAll('.tooltip .tooltiptext').forEach(t => {
-                t.style.visibility = "hidden";
-                t.style.opacity = "0";
-            });
-            // Mostrar a selecionada
-            if (!isVisible) {
-                tooltipText.style.visibility = "visible";
-                tooltipText.style.opacity = "1";
-            }
-        }
-    }
-
-    // Adiciona os ouvintes de eventos uma única vez para evitar múltiplas adições
-    document.querySelectorAll('.tooltip').forEach(tooltip => {
-        tooltip.addEventListener('click', toggleTooltip); // Adiciona o event listener aqui
-    });
+    // Inicializa os ouvintes de eventos para o botão de troca de tooltips e para o modo
+    document.querySelector('.toggle-tips').addEventListener('click', toggleTooltips);
+    document.querySelector('.mode-toggle').addEventListener('click', toggleMode);
+    initializeTooltips(); // Chama esta função para inicializar os tooltips no carregamento
 	
+		// fechar tooltip clicando no X
+	function closeTooltip(event) {
+    const tooltipText = event.target.parentElement;
+    tooltipText.style.visibility = "hidden"; // Esconde a tooltip
+    tooltipText.style.opacity = "0"; // Faz a tooltip invisível
+}
 
+</script>
 </body>
 </html>
