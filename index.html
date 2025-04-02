@@ -180,12 +180,12 @@
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: auto; /* Deixa as tooltips autoajustáveis em mobile */
+        min-width: 150px; /* Aumenta a largura mínima */
+        padding: 10px; /* Aumenta o padding ao redor do texto */
         background-color: #000000; /* Cor de fundo escura sem transparência */
         color: #FFD700; /* Cor do texto em amarelo */
         text-align: center;
         border-radius: 6px;
-        padding: 5px;
         position: absolute;
         z-index: 1;
         bottom: 125%; 
@@ -216,40 +216,70 @@
     }
 
     @media (max-width: 800px) {
-    body {
-        flex-direction: column; /* Estrutura em coluna */
-    }
+        body {
+            flex-direction: column; /* Estrutura em coluna */
+        }
 
-    nav {
-        width: 100%; /* A largura do nav ocupa 100% */
-        position: relative; /* Ajuste esta propriedade se o sticky não for necessário */
-        flex-direction: column; /* Itens em coluna */
-        align-items: flex-start; /* Alinhamento dos itens na esquerda */
-        box-shadow: none; /* Remove a sombra para simplicidade */
-    }
+        nav {
+            width: 100%; /* A largura do nav ocupa 100% */
+            position: relative; /* Ajuste esta propriedade se o sticky não for necessário */
+            flex-direction: column; /* Itens em coluna */
+            align-items: flex-start; /* Alinhamento dos itens na esquerda */
+            box-shadow: none; /* Remove a sombra para simplicidade */
+        }
 
-    nav ul {
-        width: 100%; /* A ul ocupa a largura total do painel */
-        padding: 0; /* Remove algum padding se estiver causando problemas */
-        list-style: none;
-    }
+        nav ul {
+            width: 100%; /* A ul ocupa a largura total do painel */
+            padding: 0; /* Remove algum padding se estiver causando problemas */
+            list-style: none;
+        }
 
-    .content {
-        flex-grow: 1; /* Permite que o conteúdo use o espaço restante */
-        padding: 10px; /* Ajusta o padding em torno do conteúdo */
-        overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
-        max-height: calc(100vh - 60px); /* Ajusta altura com consideração para nav */
-    }
+        .content {
+            flex-grow: 1; /* Permite que o conteúdo use o espaço restante */
+            padding: 10px; /* Ajusta o padding em torno do conteúdo */
+            overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
+            max-height: calc(100vh - 60px); /* Ajusta altura com consideração para nav */
+        }
 
-    .task-item {
-        padding: 10px; /* Ajuste do padding */
-        font-size: 14px; /* Tamanho da fonte para legibilidade em dispositivos móveis */
-    }
+        .task-item {
+            padding: 10px; /* Ajuste do padding */
+            font-size: 14px; /* Tamanho da fonte para legibilidade em dispositivos móveis */
+        }
 
-    h1, h2 {
-        text-align: center; /* Centraliza o texto em dispositivos móveis */
+        h1, h2 {
+            text-align: center; /* Centraliza o texto em dispositivos móveis */
+        }
     }
+	
+	.modal {
+    display: none; /* Ocultado por padrão */
+    position: fixed; /* Fixa o modal na tela */
+    z-index: 1000; /* Coloca o modal acima de outros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largura total */
+    height: 100%; /* Altura total */
+    overflow: auto; /* Permite rolagem se necessário */
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo semi-transparente */
 }
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%; /* Limite de largura */
+    max-width: 700px; /* Largura máxima */
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 </style>
 </head>
 <body>
@@ -290,7 +320,7 @@
 			<br>
 		</div>
 		<div class="task-item location tooltip" style="text-align: center;">
-			<a href="images/legendalayout.jpg" target="_blank" class="tooltip">Legenda (imagens de layout)</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/legendalayout.jpg'">Legenda (imagens de layout)</a>
 			<span class="tooltiptext">
 			<img src="images/legendalayout.jpg" alt="Legenda de layout" style="max-width: 100%; height: auto;">
 			<br>Clique para ampliar a imagem
@@ -333,7 +363,7 @@
         </label>
 		<br>
 		<div class="task-item location tooltip">
-			<a href="images/clearfell.jpg" target="_blank" class="tooltip">Clearfell</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/clearfell.jpg'">Clearfell</a>
 			<span class="tooltiptext">
 			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 110%; height: auto;">
 			<br>
@@ -367,7 +397,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrelwood.jpg'">The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -376,6 +406,18 @@
 				2.	Saída no lado oposto da entrada
 			</span>
 		</div>
+		
+		
+	<div class="task-item location tooltip">
+    <a href="javascript:void(0)" class="tooltip" onclick="openModal('images/thegrelwood.jpg')">The Grelwood</a>
+    <span class="tooltiptext">
+        <img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
+        <br>1. Reto pro meio, até achar um Ponto de Interesse, depois segue alguma diagonal (padrão diamante) pra achar os próximos
+        <br>2. Saída no lado oposto da entrada SEXO
+    </span>
+</div>
+		
+		
         <br>
         <label class="task-item">
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
@@ -403,7 +445,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/theredvale.jpg" target="_blank" class="tooltip">The Red Vale</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theredvale.jpg'">The Red Vale</a>
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
 			<br>Semi-círculo
@@ -421,7 +463,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrelwood.jpg'">The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -443,7 +485,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrimtangle.jpg" target="_blank" class="tooltip">The Grim Tangle</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrimtangle.jpg'">The Grim Tangle</a>
 			<span class="tooltiptext">
 			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
 			<br>
@@ -464,7 +506,7 @@
         </label>
 		<br>
         <div class="task-item location tooltip">
-			<a href="images/cemeteryoftheeternals.jpg" target="_blank" class="tooltip">Cemetery of The Eternals</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/cemeteryoftheeternals.jpg'">Cemetery of The Eternals</a>
 			<span class="tooltiptext">
 			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
 			<br>
@@ -520,7 +562,7 @@
         </label>
         <br>
 		<div class="task-item location tooltip">
-			<a href="images/huntinggrounds.jpg" target="_blank" class="tooltip">Hunting Grounds</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/huntinggrounds.jpg'">Hunting Grounds</a>
 			<span class="tooltiptext">
 			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
 			<br>
@@ -544,7 +586,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghamfarmlands.jpg" target="_blank" class="tooltip">Ogham Farmlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghamfarmlands.jpg'">Ogham Farmlands</a>
 			<span class="tooltiptext">
 			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
 			<br>
@@ -572,7 +614,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/freythorn.jpg" target="_blank" class="tooltip">Freythorn</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/freythorn.jpg'">Freythorn</a>
 			<span class="tooltiptext">
 			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
 			<br>
@@ -600,7 +642,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghamvillage.jpg" target="_blank" class="tooltip">Ogham Village</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghamvillage.jpg'">Ogham Village</a>
 			<span class="tooltiptext">
 			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
 			<br>
@@ -626,7 +668,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/themanorramparts.jpg" target="_blank" class="tooltip">The Manor Ramparts</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/themanorramparts.jpg'">The Manor Ramparts</a>
 			<span class="tooltiptext">
 			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
 			<br>
@@ -650,7 +692,7 @@
 		</label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghammanor.jpg" target="_blank" class="tooltip">Ogham Manor</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghammanor.jpg'">Ogham Manor</a>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -717,7 +759,7 @@
     <!-- Início do ATO 2 -->
     <h2 id="ato2">--== ATO 2 ==--</h2>
     <div class="task-item location tooltip">
-		<a href="images/vastirioutskirts.jpg" target="_blank" class="tooltip">Vastiri Outskirts</a>
+		<a href="javascript:void0" class="tooltip" onclick="openModal'images/vastirioutskirts.jpg'">Vastiri Outskirts</a>
 		<span class="tooltiptext">
 		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
 		<br>
@@ -758,7 +800,7 @@
     </label>
 	<br>
     <div class="task-item location tooltip">
-			<a href="images/mawdunquarry.jpg" target="_blank" class="tooltip">Mawdun Quarry</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mawdunquarry.jpg'">Mawdun Quarry</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
 			<br>
@@ -774,7 +816,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/mawdunmine.jpg" target="_blank" class="tooltip">Mawdun Mine</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mawdunmine.jpg'">Mawdun Mine</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
 			<br>
@@ -820,7 +862,7 @@
     </label>
     <br>
 	<div class="task-item location tooltip">
-			<a href="images/traitorspassage.jpg" target="_blank" class="tooltip">Traitor's Passage</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/traitorspassage.jpg'">Traitor's Passage</a>
 			<span class="tooltiptext">
 			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
 			<br>
@@ -841,7 +883,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thehalanigates.jpg" target="_blank" class="tooltip">The Halani Gates</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thehalanigates.jpg'">The Halani Gates</a>
 			<span class="tooltiptext">
 			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
 			<br>
@@ -890,7 +932,7 @@
 	</label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/keth.jpg" target="_blank" class="tooltip">Keth</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/keth.jpg'">Keth</a>
 			<span class="tooltiptext">
 			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
 			<br>
@@ -918,7 +960,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thelostcity.jpg" target="_blank" class="tooltip">The Lost City</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thelostcity.jpg'">The Lost City</a>
 			<span class="tooltiptext">
 			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
 			<br>
@@ -939,7 +981,7 @@
     </label>
 	<br>
 	<div class="task-item location tooltip">
-			<a href="images/buriedshrines.jpg" target="_blank" class="tooltip">Buried Shrines</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/buriedshrines.jpg'">Buried Shrines</a>
 			<span class="tooltiptext">
 			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
 			<br>
@@ -1000,7 +1042,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/mastodonbadlands.jpg" target="_blank" class="tooltip">Mastodon Badlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mastodonbadlands.jpg'">Mastodon Badlands</a>
 			<span class="tooltiptext">
 			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
 			<br>
@@ -1016,7 +1058,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thebonepits.jpg" target="_blank" class="tooltip">The Bone Pits</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thebonepits.jpg'">The Bone Pits</a>
 			<span class="tooltiptext">
 			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
 			<br>
@@ -1055,7 +1097,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/valleyofthetitans.jpg" target="_blank" class="tooltip">Valley of the Titans</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/valleyofthetitans.jpg'">Valley of the Titans</a>
 			<span class="tooltiptext">
 			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
 			<br>
@@ -1085,7 +1127,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thetitangrotto.jpg" target="_blank" class="tooltip">The Titan Grotto</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thetitangrotto.jpg'">The Titan Grotto</a>
 			<span class="tooltiptext">
 			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
 			<br>
@@ -1134,7 +1176,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/deshar.jpg" target="_blank" class="tooltip">Deshar</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/deshar.jpg'">Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -1165,7 +1207,7 @@
     </label>
     <br>
 	<div class="task-item location tooltip">
-			<a href="images/pathofmourning.jpg" target="_blank" class="tooltip">Path of Mourning</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/pathofmourning.jpg'">Path of Mourning</a>
 			<span class="tooltiptext">
 			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
 			<br>
@@ -1185,7 +1227,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thespiresofdeshar.jpg" target="_blank" class="tooltip">The Spires of Deshar</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thespiresofdeshar.jpg'">The Spires of Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -1229,7 +1271,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thedreadnought.jpg" target="_blank" class="tooltip">The Dreadnought</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thedreadnought.jpg'">The Dreadnought</a>
 			<span class="tooltiptext">
 			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
 			<br>
@@ -1270,7 +1312,7 @@
     <!-- Início do ATO 3 -->
     <h2 id="ato3">--== ATO 3 ==--</h2>
     <div class="task-item location tooltip">
-			<a href="images/sandsweptmarsh.jpg" target="_blank" class="tooltip">Sandswept Marsh</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/sandsweptmarsh.jpg'">Sandswept Marsh</a>
 			<span class="tooltiptext">
 			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
 			<br>
@@ -1312,7 +1354,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jungleruins.jpg" target="_blank" class="tooltip">Jungle Ruins</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jungleruins.jpg'">Jungle Ruins</a>
 			<span class="tooltiptext">
 			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
 			<br>
@@ -1343,7 +1385,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thevenomcrypts.jpg" target="_blank" class="tooltip">The Venom Crypts</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thevenomcrypts.jpg'">The Venom Crypts</a>
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
 			<br>
@@ -1366,7 +1408,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/infestedbarrens.jpg'">Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -1398,7 +1440,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theazakbog.jpg" target="_blank" class="tooltip">The Azak Bog</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theazakbog.jpg'">The Azak Bog</a>
 			<span class="tooltiptext">
 			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
 			<br>
@@ -1426,7 +1468,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/chimeralwetlands.jpg" target="_blank" class="tooltip">Chimeral Wetlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/chimeralwetlands.jpg'">Chimeral Wetlands</a>
 			<span class="tooltiptext">
 			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
 			<br>
@@ -1456,7 +1498,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jiquanismachinarium.jpg" target="_blank" class="tooltip">Jiquani's Machinarium</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jiquanismachinarium.jpg'">Jiquani's Machinarium</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
 			<br>
@@ -1491,7 +1533,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jiquanissanctum.jpg" target="_blank" class="tooltip">Jiquani's Sanctum</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jiquanissanctum.jpg'">Jiquani's Sanctum</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
 			<br>
@@ -1539,7 +1581,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/infestedbarrens.jpg'">Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -1554,7 +1596,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thematlanwaterways.jpg" target="_blank" class="tooltip">The Matlan Waterways</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thematlanwaterways.jpg'">The Matlan Waterways</a>
 			<span class="tooltiptext">
 			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
 			<br>
@@ -1596,7 +1638,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thedrownedcity.jpg" target="_blank" class="tooltip">The Drowned City</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thedrownedcity.jpg'">The Drowned City</a>
 			<span class="tooltiptext">
 			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
 			<br>
@@ -1627,7 +1669,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/themoltenvault.jpg" target="_blank" class="tooltip">The Molten Vault</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/themoltenvault.jpg'">The Molten Vault</a>
 			<span class="tooltiptext">
 			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
 			<br>
@@ -1648,7 +1690,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theapexoffilth.jpg" target="_blank" class="tooltip">The Apex of Filth</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theapexoffilth.jpg'">The Apex of Filth</a>
 			<span class="tooltiptext">
 			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
 			<br>
@@ -1688,7 +1730,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/templeofkopec.jpg" target="_blank" class="tooltip">Temple of Kopec</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/templeofkopec.jpg'">Temple of Kopec</a>
 			<span class="tooltiptext">
 			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
 			<br>
@@ -1715,7 +1757,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/utzaal.jpg" target="_blank" class="tooltip">Utzaal</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/utzaal.jpg'">Utzaal</a>
 			<span class="tooltiptext">
 			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
 			<br>
@@ -1752,7 +1794,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/aggorat.jpg" target="_blank" class="tooltip">Aggorat</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/aggorat.jpg'">Aggorat</a>
 			<span class="tooltiptext">
 			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
 			<br>
@@ -1792,7 +1834,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theblackchambers.jpg" target="_blank" class="tooltip">The Black Chambers</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theblackchambers.jpg'">The Black Chambers</a>
 			<span class="tooltiptext">
 			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
 			<br>
@@ -1846,7 +1888,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/clearfell.jpg" target="_blank" class="tooltip">Clearfell</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/clearfell.jpg'">Clearfell</a>
 			<span class="tooltiptext">
 			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 100%; height: auto;">
 			<br>
@@ -1880,7 +1922,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrelwood.jpg'">The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -1906,7 +1948,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/theredvale.jpg" target="_blank" class="tooltip">The Red Vale</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theredvale.jpg'">The Red Vale</a>
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
 			<br>Semi-círculo
@@ -1924,7 +1966,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrelwood.jpg" target="_blank" class="tooltip">The Grelwood</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrelwood.jpg'">The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -1946,7 +1988,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/thegrimtangle.jpg" target="_blank" class="tooltip">The Grim Tangle</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thegrimtangle.jpg'">The Grim Tangle</a>
 			<span class="tooltiptext">
 			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
 			<br>
@@ -1967,7 +2009,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/cemeteryoftheeternals.jpg" target="_blank" class="tooltip">Cemetery of The Eternals</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/cemeteryoftheeternals.jpg'">Cemetery of The Eternals</a>
 			<span class="tooltiptext">
 			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
 			<br>
@@ -2023,7 +2065,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/huntinggrounds.jpg" target="_blank" class="tooltip">Hunting Grounds</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/huntinggrounds.jpg'">Hunting Grounds</a>
 			<span class="tooltiptext">
 			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
 			<br>
@@ -2047,7 +2089,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghamfarmlands.jpg" target="_blank" class="tooltip">Ogham Farmlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghamfarmlands.jpg'">Ogham Farmlands</a>
 			<span class="tooltiptext">
 			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
 			<br>
@@ -2075,7 +2117,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/freythorn.jpg" target="_blank" class="tooltip">Freythorn</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/freythorn.jpg'">Freythorn</a>
 			<span class="tooltiptext">
 			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
 			<br>
@@ -2103,7 +2145,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghamvillage.jpg" target="_blank" class="tooltip">Ogham Village</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghamvillage.jpg'">Ogham Village</a>
 			<span class="tooltiptext">
 			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
 			<br>
@@ -2129,7 +2171,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/themanorramparts.jpg" target="_blank" class="tooltip">The Manor Ramparts</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/themanorramparts.jpg'">The Manor Ramparts</a>
 			<span class="tooltiptext">
 			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
 			<br>
@@ -2148,7 +2190,7 @@
 		</label>
         <br>
         <div class="task-item location tooltip">
-			<a href="images/oghammanor.jpg" target="_blank" class="tooltip">Ogham Manor</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/oghammanor.jpg'">Ogham Manor</a>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -2215,7 +2257,7 @@
     <!-- Início do ATO 2 Cruel -->
     <h2 id="ato2-cruel">--== ATO 2 Cruel ==--</h2>
     <div class="task-item location tooltip">
-		<a href="images/vastirioutskirts.jpg" target="_blank" class="tooltip">Vastiri Outskirts</a>
+		<a href="javascript:void0" class="tooltip" onclick="openModal'images/vastirioutskirts.jpg'">Vastiri Outskirts</a>
 		<span class="tooltiptext">
 		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
 		<br>
@@ -2256,7 +2298,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/mawdunquarry.jpg" target="_blank" class="tooltip">Mawdun Quarry</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mawdunquarry.jpg'">Mawdun Quarry</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
 			<br>
@@ -2272,7 +2314,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/mawdunmine.jpg" target="_blank" class="tooltip">Mawdun Mine</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mawdunmine.jpg'">Mawdun Mine</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
 			<br>
@@ -2318,7 +2360,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/traitorspassage.jpg" target="_blank" class="tooltip">Traitor's Passage</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/traitorspassage.jpg'">Traitor's Passage</a>
 			<span class="tooltiptext">
 			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
 			<br>
@@ -2339,7 +2381,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thehalanigates.jpg" target="_blank" class="tooltip">The Halani Gates</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thehalanigates.jpg'">The Halani Gates</a>
 			<span class="tooltiptext">
 			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
 			<br>
@@ -2378,7 +2420,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/keth.jpg" target="_blank" class="tooltip">Keth</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/keth.jpg'">Keth</a>
 			<span class="tooltiptext">
 			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
 			<br>
@@ -2406,7 +2448,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thelostcity.jpg" target="_blank" class="tooltip">The Lost City</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thelostcity.jpg'">The Lost City</a>
 			<span class="tooltiptext">
 			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
 			<br>
@@ -2427,7 +2469,7 @@
     </label>
 	<br>
 	<div class="task-item location tooltip">
-			<a href="images/buriedshrines.jpg" target="_blank" class="tooltip">Buried Shrines</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/buriedshrines.jpg'">Buried Shrines</a>
 			<span class="tooltiptext">
 			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
 			<br>
@@ -2488,7 +2530,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/mastodonbadlands.jpg" target="_blank" class="tooltip">Mastodon Badlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/mastodonbadlands.jpg'">Mastodon Badlands</a>
 			<span class="tooltiptext">
 			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
 			<br>
@@ -2504,7 +2546,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thebonepits.jpg" target="_blank" class="tooltip">The Bone Pits</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thebonepits.jpg'">The Bone Pits</a>
 			<span class="tooltiptext">
 			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
 			<br>
@@ -2543,7 +2585,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/valleyofthetitans.jpg" target="_blank" class="tooltip">Valley of the Titans</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/valleyofthetitans.jpg'">Valley of the Titans</a>
 			<span class="tooltiptext">
 			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
 			<br>
@@ -2573,7 +2615,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thetitangrotto.jpg" target="_blank" class="tooltip">The Titan Grotto</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thetitangrotto.jpg'">The Titan Grotto</a>
 			<span class="tooltiptext">
 			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
 			<br>
@@ -2622,7 +2664,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/deshar.jpg" target="_blank" class="tooltip">Deshar</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/deshar.jpg'">Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -2653,7 +2695,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/pathofmourning.jpg" target="_blank" class="tooltip">Path of Mourning</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/pathofmourning.jpg'">Path of Mourning</a>
 			<span class="tooltiptext">
 			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
 			<br>
@@ -2673,7 +2715,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thespiresofdeshar.jpg" target="_blank" class="tooltip">The Spires of Deshar</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thespiresofdeshar.jpg'">The Spires of Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -2717,7 +2759,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thedreadnought.jpg" target="_blank" class="tooltip">The Dreadnought</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thedreadnought.jpg'">The Dreadnought</a>
 			<span class="tooltiptext">
 			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
 			<br>
@@ -2758,7 +2800,7 @@
     <!-- Início do ATO 3 Cruel -->
     <h2 id="ato3-cruel">--== ATO 3 Cruel ==--</h2>
     <div class="task-item location tooltip">
-			<a href="images/sandsweptmarsh.jpg" target="_blank" class="tooltip">Sandswept Marsh</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/sandsweptmarsh.jpg'">Sandswept Marsh</a>
 			<span class="tooltiptext">
 			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
 			<br>
@@ -2795,7 +2837,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jungleruins.jpg" target="_blank" class="tooltip">Jungle Ruins</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jungleruins.jpg'">Jungle Ruins</a>
 			<span class="tooltiptext">
 			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
 			<br>
@@ -2826,7 +2868,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thevenomcrypts.jpg" target="_blank" class="tooltip">The Venom Crypts</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thevenomcrypts.jpg'">The Venom Crypts</a>
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
 			<br>
@@ -2849,7 +2891,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/infestedbarrens.jpg'">Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -2881,7 +2923,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theazakbog.jpg" target="_blank" class="tooltip">The Azak Bog</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theazakbog.jpg'">The Azak Bog</a>
 			<span class="tooltiptext">
 			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
 			<br>
@@ -2909,7 +2951,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/chimeralwetlands.jpg" target="_blank" class="tooltip">Chimeral Wetlands</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/chimeralwetlands.jpg'">Chimeral Wetlands</a>
 			<span class="tooltiptext">
 			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
 			<br>
@@ -2934,7 +2976,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jiquanismachinarium.jpg" target="_blank" class="tooltip">Jiquani's Machinarium</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jiquanismachinarium.jpg'">Jiquani's Machinarium</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
 			<br>
@@ -2969,7 +3011,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/jiquanissanctum.jpg" target="_blank" class="tooltip">Jiquani's Sanctum</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/jiquanissanctum.jpg'">Jiquani's Sanctum</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
 			<br>
@@ -3017,7 +3059,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/infestedbarrens.jpg'">Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -3032,7 +3074,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thematlanwaterways.jpg" target="_blank" class="tooltip">The Matlan Waterways</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thematlanwaterways.jpg'">The Matlan Waterways</a>
 			<span class="tooltiptext">
 			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
 			<br>
@@ -3074,7 +3116,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/thedrownedcity.jpg" target="_blank" class="tooltip">The Drowned City</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/thedrownedcity.jpg'">The Drowned City</a>
 			<span class="tooltiptext">
 			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
 			<br>
@@ -3105,7 +3147,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/themoltenvault.jpg" target="_blank" class="tooltip">The Molten Vault</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/themoltenvault.jpg'">The Molten Vault</a>
 			<span class="tooltiptext">
 			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
 			<br>
@@ -3126,7 +3168,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theapexoffilth.jpg" target="_blank" class="tooltip">The Apex of Filth</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theapexoffilth.jpg'">The Apex of Filth</a>
 			<span class="tooltiptext">
 			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
 			<br>
@@ -3166,7 +3208,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/templeofkopec.jpg" target="_blank" class="tooltip">Temple of Kopec</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/templeofkopec.jpg'">Temple of Kopec</a>
 			<span class="tooltiptext">
 			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
 			<br>
@@ -3192,7 +3234,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/utzaal.jpg" target="_blank" class="tooltip">Utzaal</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/utzaal.jpg'">Utzaal</a>
 			<span class="tooltiptext">
 			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
 			<br>
@@ -3224,7 +3266,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/aggorat.jpg" target="_blank" class="tooltip">Aggorat</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/aggorat.jpg'">Aggorat</a>
 			<span class="tooltiptext">
 			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
 			<br>
@@ -3264,7 +3306,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a href="images/theblackchambers.jpg" target="_blank" class="tooltip">The Black Chambers</a>
+			<a href="javascript:void0" class="tooltip" onclick="openModal'images/theblackchambers.jpg'">The Black Chambers</a>
 			<span class="tooltiptext">
 			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
 			<br>
@@ -3297,6 +3339,11 @@
     </div>
 
     <div class="made-by">Feito por grimgamer9 <img src="images/swag.png" alt="swag"></div>
+
+<div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
 
 <script>
     let isDarkMode = false;
@@ -3333,40 +3380,48 @@
         // Adiciona ou remove os ouvintes de eventos conforme necessário
         if (tooltipsEnabled) {
             document.querySelectorAll('.tooltip').forEach(tooltip => {
-                tooltip.addEventListener('mouseover', showTooltip);
-                tooltip.addEventListener('mouseout', hideTooltip);
+                tooltip.addEventListener('click', toggleTooltip); // Mudei de mouseover para click
             });
         } else {
             document.querySelectorAll('.tooltip').forEach(tooltip => {
-                tooltip.removeEventListener('mouseover', showTooltip);
-                tooltip.removeEventListener('mouseout', hideTooltip);
+                tooltip.removeEventListener('click', toggleTooltip);
             });
         }
     }
 
-    function showTooltip(event) {
-        if (tooltipsEnabled) {
-            const tooltipText = event.currentTarget.querySelector('.tooltiptext');
-            if (tooltipText) {
+    function toggleTooltip(event) {
+        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+        if (tooltipText) {
+            const isVisible = tooltipText.style.visibility === "visible";
+            // Esconder todas tooltips
+            document.querySelectorAll('.tooltip .tooltiptext').forEach(t => {
+                t.style.visibility = "hidden";
+                t.style.opacity = "0";
+            });
+            // Mostrar a selecionada
+            if (!isVisible) {
                 tooltipText.style.visibility = "visible";
                 tooltipText.style.opacity = "1";
             }
         }
     }
 
-    function hideTooltip(event) {
-        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
-        if (tooltipText) {
-            tooltipText.style.visibility = "hidden";
-            tooltipText.style.opacity = "0";
-        }
-    }
-
     // Adiciona os ouvintes de eventos uma única vez para evitar múltiplas adições
     document.querySelectorAll('.tooltip').forEach(tooltip => {
-        tooltip.addEventListener('mouseover', showTooltip);
-        tooltip.addEventListener('mouseout', hideTooltip);
+        tooltip.addEventListener('click', toggleTooltip); // Adiciona o event listener aqui
     });
+	
+	function openModal(imageSrc) {
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    modal.style.display = "block"; // Exibe o modal
+    modalImage.src = imageSrc; // Define a imagem do modal
+}
+
+function closeModal() {
+    document.getElementById("imageModal").style.display = "none"; // Oculta o modal
+}
+
 </script>
 </body>
 </html>
