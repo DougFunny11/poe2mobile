@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<!-- versão 1.25 -->
+    <!-- versão 1.25 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Em busca da felicidade - vamo doando</title>
@@ -9,228 +9,244 @@
     <meta http-equiv="Content-Language" content="pt-BR">
 <style>
     :root {
-    --primary-color: #208C80;
-    --hover-color: #f0f0f0;
-    --completed-color: #888;
-    --background-color: #f7f7f7;
-    --text-color: #333;
-    --dark-background-color: #222;
-    --dark-text-color: #eee;
-    --dark-hover-color: #555;
-    --dark-primary-color: #3B9A94;
-    --dark-orange: #D95D09;
-    --green: #008000;
-    --yellow: #FFEA00;
-    --blue: #007bff;
-    --purple: #9b59b6;
-    --active-act-color: #FFD700;
-    --border-color: #A0A0A0;
-    --dark-border-color: #555;
-    --light-blue: #20B2AA;
-    --red: #B22222;
-}
+        --primary-color: #208C80;
+        --hover-color: #f0f0f0;
+        --completed-color: #888;
+        --background-color: #f7f7f7;
+        --text-color: #333;
+        --dark-background-color: #222;
+        --dark-text-color: #eee;
+        --dark-hover-color: #555;
+        --dark-primary-color: #3B9A94;
+        --dark-orange: #D95D09;
+        --green: #008000;
+        --yellow: #FFEA00;
+        --blue: #007bff;
+        --purple: #9b59b6;
+        --active-act-color: #FFD700;
+        --border-color: #A0A0A0;
+        --dark-border-color: #555;
+        --light-blue: #20B2AA;
+        --red: #B22222;
+    }
 
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.4;
-    margin: 0;
-    display: flex;
-    background-color: var(--background-color);
-    transition: background-color 0.3s, color 0.3s;
-    position: relative;
-    min-height: 100vh; /* Alterado de height para min-height */
-}
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.4;
+        margin: 0;
+        display: flex;
+        background-color: var(--background-color);
+        transition: background-color 0.3s, color 0.3s;
+        position: relative;
+        min-height: 100vh; /* Alterado de height para min-height */
+    }
 
-nav {
-    width: 200px;
-    background: var(--primary-color);
-    padding: 10px;
-    height: auto;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    border-radius: 5px;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-}
-
-nav ul li {
-    margin: 5px 0;
-}
-
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    border: 2px solid transparent;
-    padding: 8px; /* Aumentado para maior áreas clicáveis */
-    border-radius: 5px;
-    transition: border-color 0.3s; 
-}
-
-nav ul li a:hover {
-    border-color: #F0E68C; 
-}
-
-.content {
-    flex: 1; 
-    padding: 15px;
-    overflow-y: auto;
-    box-sizing: border-box; 
-}
-
-h1, h2 {
-    color: var(--text-color);
-    margin: 5px 0;
-}
-
-h2 {
-    border: 1px solid var(--primary-color);
-    padding: 8px;
-    border-radius: 5px; 
-    text-align: center; 
-}
-
-.task-item {
-    margin-bottom: 10px; /* Aumentado para espaçamento maior */
-    padding: 10px; /* Aumentado para áreas clicáveis maiores */
-    border-radius: 5px; 
-    cursor: pointer; 
-}
-
-.task-item input[type="checkbox"] {
-    margin-right: 8px;
-    cursor: pointer;
-}
-
-.task-item.checked {
-    text-decoration: line-through;
-    color: var(--completed-color);
-}
-
-.location {
-    font-size: 1em;  
-    color: var(--blue); 
-    margin: 15px 0 5px;
-    text-decoration: none; 
-    font-style: italic; 
-}
-
-.task-item:hover {
-    background-color: var(--hover-color);
-}
-
-.mob {
-    color: var(--dark-orange);
-    font-weight: bold;
-}
-
-.item {
-    color: var(--green);
-    font-weight: bold;
-}
-
-.npc {
-    color: var(--purple);
-    font-weight: bold; 
-}
-
-.dark-mode {
-    background-color: var(--dark-background-color);
-    color: var(--dark-text-color);
-}
-
-.dark-mode nav {
-    background: var(--dark-primary-color);
-}
-
-.dark-mode .task-item:hover {
-    background-color: var(--dark-hover-color);
-}
-
-.mode-toggle, .acto-button {
-    display: block;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 8px 12px; /* Aumentado para maior área clicável */
-    text-align: center;
-    border-radius: 5px;
-    margin: 5px 0;
-    border: 2px solid transparent; 
-    transition: border-color 0.3s; 
-}
-
-.mode-toggle:hover, .acto-button:hover {
-    background-color: #165e55;
-    border-color: #F0E68C; 
-}
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 200px; /* Diminuído para se ajustar melhor em telas móveis */
-    background-color: #000000; /* Cor de fundo escura sem transparência */
-    color: #FFD700; /* Cor do texto em amarelo */
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; 
-    left: 50%;
-    transform: translateX(-50%); /* Centraliza a tooltip */
-    opacity: 0; /* Inicialmente invisível */
-    transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-.made-by {
-    position: fixed;
-    bottom: 10px; 
-    left: 10px; 
-    color: white;
-    font-size: 0.8em;
-    display: flex;
-    align-items: center; 
-}
-
-.made-by img {
-    height: 1em; 
-    margin-left: 5px; 
-}
-
-@media (max-width: 600px) {
     nav {
-        width: 100%;
+        width: 200px;
+        background: var(--primary-color);
+        padding: 10px;
+        height: auto;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         position: sticky;
         top: 0;
-        flex-direction: column; /* Colocando os itens da nav em coluna */
+        border-radius: 5px;
     }
-    
+
+    nav ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+
+    nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        border: 2px solid transparent;
+        padding: 8px; /* Aumentado para maior áreas clicáveis */
+        border-radius: 5px;
+        transition: border-color 0.3s; 
+    }
+
+    nav ul li a:hover {
+        border-color: #F0E68C; 
+    }
+
     .content {
-        padding: 10px; /* Ajuste para conteúdo */
+        flex: 1; 
+        padding: 15px;
+        overflow-y: auto;
+        box-sizing: border-box; 
     }
-    
+
+    h1, h2 {
+        color: var(--text-color);
+        margin: 5px 0;
+    }
+
+    h1 {
+        font-size: 1.5em;  /* Tamanho de fonte maior */
+    }
+
+    h2 {
+        border: 1px solid var(--primary-color);
+        padding: 8px;
+        border-radius: 5px; 
+        text-align: center; 
+        font-size: 1.3em; /* Ajustado para mobile */
+    }
+
     .task-item {
-        padding: 12px; /* Aumente o padding para itens em mobile */
+        margin-bottom: 10px; /* Aumentado para espaçamento maior */
+        padding: 10px; /* Aumentado para áreas clicáveis maiores */
+        border-radius: 5px; 
+        cursor: pointer; 
+    }
+
+    .task-item input[type="checkbox"] {
+        margin-right: 8px;
+        cursor: pointer;
+    }
+
+    .task-item.checked {
+        text-decoration: line-through;
+        color: var(--completed-color);
+    }
+
+    .location {
+        font-size: 1em;  
+        color: var(--blue); 
+        margin: 15px 0 5px;
+        text-decoration: none; 
+        font-style: italic; 
+    }
+
+    .task-item:hover {
+        background-color: var(--hover-color);
+    }
+
+    .mob {
+        color: var(--dark-orange);
+        font-weight: bold;
+    }
+
+    .item {
+        color: var(--green);
+        font-weight: bold;
+    }
+
+    .npc {
+        color: var(--purple);
+        font-weight: bold; 
+    }
+
+    .dark-mode {
+        background-color: var(--dark-background-color);
+        color: var(--dark-text-color);
+    }
+
+    .dark-mode nav {
+        background: var(--dark-primary-color);
+    }
+
+    .dark-mode .task-item:hover {
+        background-color: var(--dark-hover-color);
+    }
+
+    .mode-toggle, .acto-button {
+        display: block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 8px 12px; /* Aumentado para maior área clicável */
+        text-align: center;
+        border-radius: 5px;
+        margin: 5px 0;
+        border: 2px solid transparent; 
+        transition: border-color 0.3s; 
+    }
+
+    .mode-toggle:hover, .acto-button:hover {
+        background-color: #165e55;
+        border-color: #F0E68C; 
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
     }
 
     .tooltip .tooltiptext {
+        visibility: hidden;
         width: auto; /* Deixa as tooltips autoajustáveis em mobile */
+        background-color: #000000; /* Cor de fundo escura sem transparência */
+        color: #FFD700; /* Cor do texto em amarelo */
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; 
+        left: 50%;
+        transform: translateX(-50%); /* Centraliza a tooltip */
+        opacity: 0; /* Inicialmente invisível */
+        transition: opacity 0.3s;
     }
-}
-		
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .made-by {
+        position: fixed;
+        bottom: 10px; 
+        left: 10px; 
+        color: white;
+        font-size: 0.8em;
+        display: flex;
+        align-items: center; 
+    }
+
+    .made-by img {
+        height: 1em; 
+        margin-left: 5px; 
+    }
+
+    @media (max-width: 600px) {
+        nav {
+            width: 100%; /* Ocupa a largura total */
+            position: sticky;
+            top: 0;
+            flex-direction: column;
+            align-items: flex-start; /* Alinhamento adequado dos itens */
+        }
+
+        .content {
+            padding: 10px; /* Reduz o padding do conteúdo para dispositivos móveis */
+        }
+
+        .task-item {
+            padding: 12px; /* Aumente o padding para itens em mobile */
+            font-size: 0.9em; /* Ajuste o tamanho da fonte para melhor legibilidade */
+        }
+
+        h1 {
+            font-size: 1.5em; /* Cooler size em mobile */
+        }
+
+        h2 {
+            font-size: 1.3em; /* Cooler size em mobile */
+        }
+
+        /* Adiciona um espaçamento interno em task-item para facilitar o toque */
+        .task-item label {
+            display: block; /* Faz o label ocupar a largura total */
+            cursor: pointer; /* Muda o cursor para indicar um item clicável */
+        }
+    }
 </style>
 </head>
 <body>
@@ -3269,67 +3285,85 @@ h2 {
         Portal de volta para a cidade, Fale com <span class="npc">Doryani</span> . GG.
     </label>
 	<br>
+	<br>
+	Créditos:
+	<br>
+	Serviram como base para esse guia:
+	guias do mobalytics, reddit do poe2, e youtuber lolcohol + campaign codex discord community
     <!-- FIM DO ATO 3 Cruel -->
     </div>
-xdd
+
     <div class="made-by">Feito por grimgamer9 <img src="images/swag.png" alt="swag"></div>
 
-    <script>
-        let isDarkMode = false;
-        let tooltipsEnabled = true;
+<script>
+    let isDarkMode = false;
+    let tooltipsEnabled = true;
 
-        function toggleMode() {
-            const body = document.body;
-            const modeToggleButton = document.querySelector('.mode-toggle');
-            isDarkMode = !isDarkMode;
+    function toggleMode() {
+        const body = document.body;
+        const modeToggleButton = document.querySelector('.mode-toggle');
+        isDarkMode = !isDarkMode;
 
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            modeToggleButton.textContent = "Modo Claro";
+        } else {
+            body.classList.remove('dark-mode');
+            modeToggleButton.textContent = "Modo Escuro";
+        }
+
+        const titleElements = document.querySelectorAll('h2');
+        titleElements.forEach(title => {
             if (isDarkMode) {
-                body.classList.add('dark-mode');
-                modeToggleButton.textContent = "Modo Claro";
+                title.style.color = 'lightcyan';
             } else {
-                body.classList.remove('dark-mode');
-                modeToggleButton.textContent = "Modo Escuro";
+                title.style.color = 'var(--text-color)';
             }
+        });
+    }
 
-            const titleElements = document.querySelectorAll('h2');
-            titleElements.forEach(title => {
-                if (isDarkMode) {
-                    title.style.color = 'lightcyan';
-                } else {
-                    title.style.color = 'var(--text-color)';
-                }
+    function toggleTooltips() {
+        tooltipsEnabled = !tooltipsEnabled;
+        const toggleButton = document.querySelector('.toggle-tips');
+        toggleButton.textContent = tooltipsEnabled ? "Dicas Flutuantes: ON" : "Dicas Flutuantes: OFF";
+
+        // Adiciona ou remove os ouvintes de eventos conforme necessário
+        if (tooltipsEnabled) {
+            document.querySelectorAll('.tooltip').forEach(tooltip => {
+                tooltip.addEventListener('mouseover', showTooltip);
+                tooltip.addEventListener('mouseout', hideTooltip);
+            });
+        } else {
+            document.querySelectorAll('.tooltip').forEach(tooltip => {
+                tooltip.removeEventListener('mouseover', showTooltip);
+                tooltip.removeEventListener('mouseout', hideTooltip);
             });
         }
+    }
 
-        function toggleTooltips() {
-            tooltipsEnabled = !tooltipsEnabled;
-            const toggleButton = document.querySelector('.toggle-tips');
-            toggleButton.textContent = tooltipsEnabled ? "Dicas Flutuantes: ON" : "Dicas Flutuantes: OFF";
-        }
-
-        function showTooltip(event) {
-            if (tooltipsEnabled) {
-                const tooltipText = event.currentTarget.querySelector('.tooltiptext');
-                if (tooltipText) {
-                    tooltipText.style.visibility = "visible";
-                    tooltipText.style.opacity = "1";
-                }
-            }
-        }
-        
-        function hideTooltip(event) {
+    function showTooltip(event) {
+        if (tooltipsEnabled) {
             const tooltipText = event.currentTarget.querySelector('.tooltiptext');
             if (tooltipText) {
-                tooltipText.style.visibility = "hidden";
-                tooltipText.style.opacity = "0";
+                tooltipText.style.visibility = "visible";
+                tooltipText.style.opacity = "1";
             }
         }
+    }
 
-        document.querySelectorAll('.tooltip').forEach(tooltip => {
-            tooltip.addEventListener('mouseover', showTooltip);
-            tooltip.addEventListener('mouseout', hideTooltip);
-        });
+    function hideTooltip(event) {
+        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+        if (tooltipText) {
+            tooltipText.style.visibility = "hidden";
+            tooltipText.style.opacity = "0";
+        }
+    }
 
-    </script>
+    // Adiciona os ouvintes de eventos uma única vez para evitar múltiplas adições
+    document.querySelectorAll('.tooltip').forEach(tooltip => {
+        tooltip.addEventListener('mouseover', showTooltip);
+        tooltip.addEventListener('mouseout', hideTooltip);
+    });
+</script>
 </body>
 </html>
