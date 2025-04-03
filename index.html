@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- versão 1.25 -->
+    <!-- versão 1.25m -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Em busca da felicidade - vamo doando</title>
@@ -80,6 +80,12 @@
         overflow-y: auto;
         box-sizing: border-box; 
     }
+	
+	.cronometromobile {
+		display: flex;              /* Usar flexbox para alinhar os itens na mesma linha */
+		align-items: center;       /* Alinhamento vertical ao centro */
+		margin-bottom: 10px;       /* Espaçamento inferior se necessário */
+	}
 
     h1, h2 {
         color: var(--text-color);
@@ -172,6 +178,23 @@
         border-color: #F0E68C; 
     }
 
+	.mode-toggle:hover, .acto-button:hover, .cronometro-button:hover {
+            background-color: #165e55;
+            border-color: #F0E68C; 
+        }
+
+	.cronometro-button {
+		background-color: var(--primary-color);
+        color: white;
+        padding: 0px 4px;
+        text-align: center;
+        border-radius: 5px;
+        margin: 5px 0;          /* Margem compacta entre os botões */
+        border: 2px solid transparent; 
+        transition: border-color 0.3s, background-color 0.3s; 
+		font-size: 15px;
+	}
+
     .tooltip {
         position: relative;
         display: inline-block;
@@ -214,40 +237,34 @@
         height: 1em; 
         margin-left: 5px; 
     }
-
-.tooltip.toggle-tips {
-        display: block;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 5px 10px;
-        text-align: center;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        border: 2px solid transparent; 
-        transition: border-color 0.3s, background-color 0.3s; 
+	
+	#timer {
+        font-size: 1em; 
+		text-align: center;
+        margin-bottom: 10px; /* Ajustado para espaçamento com os botões */
     }
 
-    .tooltip.toggle-tips:hover {
-        background-color: #165e55;
-        border-color: #F0E68C; 
-    }
+	.tooltip.toggle-tips {
+		display: block; /* Comportamento de bloco */
+		background-color: var(--primary-color);
+		color: white;
+		padding: 5px 10px;
+		text-align: center;
+		border-radius: 5px;
+		margin-bottom: 10px;
+		border: 2px solid transparent; 
+		transition: border-color 0.3s, background-color 0.3s; 
+	}
 
-.tooltip.toggle-tips {
-        display: block;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 5px 10px;
-        text-align: center;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        border: 2px solid transparent; 
-        transition: border-color 0.3s, background-color 0.3s; 
-    }
-
-    .tooltip.toggle-tips:hover {
-        background-color: #165e55;
-        border-color: #F0E68C; 
-    }
+	.tooltip.toggle-tips:hover {
+		background-color: #165e55;
+		border-color: #F0E68C; 
+	}
+	
+	/* Classe para esconder o botão Dicas Flutuantes */
+	.hidden {
+		visibility: hidden; /* Esta regra esconde o elemento, mas mantém o espaço ocupado */
+	}
 
     @media (max-width: 800px) {
         body {
@@ -285,7 +302,17 @@
         }
     }
 	
-.version-switch {
+	.recompensa {
+        color: var(--light-blue); 
+        font-weight: bold; 
+    }
+
+    .recompensastats {
+        color: #B22222; 
+        font-weight: bold; 
+    }
+	
+	.version-switch {
 		margin: 20px 0; /* Margem superior e inferior */
 		text-align: center; /* Centraliza os botões */
 	}
@@ -316,8 +343,8 @@
 </head>
 <body>
     <nav>
-        <button class="mode-toggle" onclick="toggleMode()">Modo Escuro</button>
-        <button class="tooltip toggle-tips" onclick="toggleTooltips()">Dicas Flutuantes</button>
+        <button class="mode-toggle">Modo Escuro</button>
+		<button class="tooltip toggle-tips hidden" onclick="toggleTooltips()">Dicas Flutuantes</button>
         <div class="spacer"></div>
         <h2 class="guia-rapida">Guia Rápido</h2>
         <a href="#ato1" class="acto-button">ATO 1</a>
@@ -326,6 +353,14 @@
 		<a href="#ato1-cruel" class="acto-button">ATO 1 CRUEL</a>
 		<a href="#ato2-cruel" class="acto-button">ATO 2 CRUEL</a>
 		<a href="#ato3-cruel" class="acto-button">ATO 3 CRUEL</a>
+	<br>
+		<div class="cronometromobile">
+			<div id="timer">00:00:00</div>
+			<button class="cronometro-button" id="startButton">Iniciar</button>
+			<button class="cronometro-button" id="pauseButton">Pausar</button>
+			<button class="cronometro-button" id="resetButton">Reset</button>
+			</nav>
+		</div>
     </nav>
 
     <div class="content">
@@ -356,10 +391,10 @@
 			<span class="tooltiptext">
 			<img src="images/legendalayout.jpg" alt="Legenda de layout" style="max-width: 100%; height: auto;">
 			<br>
+				
 			</span>
-			
 			<div class="highlight-box" style="border: 2px solid red; background-color: #ffe6e6; padding: 15px; border-radius: 8px; font-size: 1.5em; font-weight: bold; margin-top: 15px;">
-			IMPORTANTE: passe o mouse e clique para ver os layouts!
+			IMPORTANTE: toque para ver os layouts!
 			</div>
 		</div>
 		<br>
@@ -377,7 +412,6 @@
 		<div class="task-item location tooltip">
 			Riverbank
 			<span class="tooltiptext">
-			<span class="close-tooltip" onclick="closeTooltip(event)">×</span> <!-- Adiciona um X para fechar -->
 			<img src="images/riverbank.jpg" alt="Riverbank" style="max-width: 90%; height: auto;">
 			<br>Mapa Tutorial
 			</span>
@@ -403,10 +437,12 @@
         </label>
 		<br>
 		<div class="task-item location tooltip">
-			<a  class="tooltip" >Clearfell</a>
+			<a >Clearfell</a>
 			<span class="tooltiptext">
 			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 110%; height: auto;">
 			<br>
+				
+				<br>
 			</span>
 		</div>
 		<br>
@@ -437,7 +473,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grelwood</a>
+			<a >The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -473,10 +509,13 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Red Vale</a>
+			<a >The Red Vale</a>
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
-			<br>Semi-círculo
+			<br>
+				Obeliscos spawnam em um Padrão de Triângulo
+				<br>
+				1.	Faça um Semi-círculo
 			</span>
 		</div>
         <br>
@@ -491,7 +530,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grelwood</a>
+			<a >The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -513,7 +552,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grim Tangle</a>
+			<a >The Grim Tangle</a>
 			<span class="tooltiptext">
 			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
 			<br>
@@ -534,7 +573,7 @@
         </label>
 		<br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Cemetery of The Eternals</a>
+			<a >Cemetery of The Eternals</a>
 			<span class="tooltiptext">
 			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
 			<br>
@@ -590,7 +629,7 @@
         </label>
         <br>
 		<div class="task-item location tooltip">
-			<a  class="tooltip" >Hunting Grounds</a>
+			<a >Hunting Grounds</a>
 			<span class="tooltiptext">
 			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
 			<br>
@@ -614,7 +653,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Farmlands</a>
+			<a >Ogham Farmlands</a>
 			<span class="tooltiptext">
 			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
 			<br>
@@ -642,7 +681,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Freythorn</a>
+			<a >Freythorn</a>
 			<span class="tooltiptext">
 			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
 			<br>
@@ -656,7 +695,7 @@
 		<br>
 		<label class="task-item tooltip">
 			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-			Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensastats"> +30 spirit</span>, <span class="recompensa"> level 4 Uncut Spirit Gem 
+			Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensa"> level 4 Uncut Spirit Gem </span>, <span class="recompensastats"> +30 spirit</span>
 			<span class="tooltiptext">
 			Debuff VERMELHO: fique PARADO para não tomar freeze
 			<br>
@@ -670,7 +709,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Village</a>
+			<a >Ogham Village</a>
 			<span class="tooltiptext">
 			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
 			<br>
@@ -696,7 +735,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Manor Ramparts</a>
+			<a >The Manor Ramparts</a>
 			<span class="tooltiptext">
 			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
 			<br>
@@ -720,7 +759,7 @@
 		</label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Manor</a>
+			<a >Ogham Manor</a>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -732,7 +771,7 @@
         <br>
         <label class="task-item">
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats"> +maximum life</span>
+            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats"> +20 Maximum Life</span>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -787,7 +826,7 @@
     <!-- Início do ATO 2 -->
     <h2 id="ato2">--== ATO 2 ==--</h2>
     <div class="task-item location tooltip">
-		<a  class="tooltip" >Vastiri Outskirts</a>
+		<a >Vastiri Outskirts</a>
 		<span class="tooltiptext">
 		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
 		<br>
@@ -806,7 +845,7 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan.
+        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan. Reward: <span class="recompensa">level 5 Uncut Skill</span>
     </label>
     <br>
 	<div class="task-item location tooltip">
@@ -828,7 +867,7 @@
     </label>
 	<br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mawdun Quarry</a>
+			<a >Mawdun Quarry</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
 			<br>
@@ -844,7 +883,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mawdun Mine</a>
+			<a >Mawdun Mine</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
 			<br>
@@ -876,7 +915,7 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir a <span class="location">The Halani Gates</span>.
+        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir à <span class="location">The Halani Gates</span>
     </label>
     <br>
     <label class="task-item">
@@ -886,11 +925,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Traitor's Passage</span>.
+        Use o mapa do deserto para ir à <span class="location">Traitor's Passage</span>.
     </label>
     <br>
 	<div class="task-item location tooltip">
-			<a  class="tooltip" >Traitor's Passage</a>
+			<a >Traitor's Passage</a>
 			<span class="tooltiptext">
 			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
 			<br>
@@ -911,19 +950,21 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Halani Gates</a>
+			<a >The Halani Gates</a>
 			<span class="tooltiptext">
 			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
 			<br>
 				1.	Sentido oposto da entrada, geralmente para sudeste
 				<br>
 				2.	Padrão S (vai para um lado e para o outro, zigue-zague)
+				<br>
+				3.	Vá pela borda do cânion, evite deixar a NPC para trás ela pode parar em algum pack de mobs
 			</span>
 		</div>
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Encontre e mate <span class="mob">Jamanra, the Risen King</span>. Fique perto do cânion. Atravesse o cânion 3 vezes para encontrar o boss.
+        Encontre e mate <span class="mob">Jamanra, the Risen King</span>
     </label>
     <br>
     <label class="task-item">
@@ -951,16 +992,16 @@
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        (Opcional) Faça o trial para ganhar pontos de ascendência
+        Faça o trial para ganhar Reward: <span class="recompensastats">2 pontos de ascendência</span>
 	</label>	
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Keth</span>
+        TP e use o mapa do deserto para ir à <span class="location">Keth</span>
 	</label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Keth</a>
+			<a >Keth</a>
 			<span class="tooltiptext">
 			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
 			<br>
@@ -988,7 +1029,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Lost City</a>
+			<a >The Lost City</a>
 			<span class="tooltiptext">
 			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
 			<br>
@@ -1009,7 +1050,7 @@
     </label>
 	<br>
 	<div class="task-item location tooltip">
-			<a  class="tooltip" >Buried Shrines</a>
+			<a >Buried Shrines</a>
 			<span class="tooltiptext">
 			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
 			<br>
@@ -1037,10 +1078,12 @@
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
     </label>
+	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Encontre e siga para <span class="location">Heart of Keth</span>
     </label>
+	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Mate <span class="mob">Azarian, the Forsaken Son</span> em <span class="location">Buried Shrines</span>
@@ -1066,11 +1109,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Mastodon Badlands</span>.
+        Use o mapa do deserto para ir à <span class="location">Mastodon Badlands</span>.
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mastodon Badlands</a>
+			<a >Mastodon Badlands</a>
 			<span class="tooltiptext">
 			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
 			<br>
@@ -1086,7 +1129,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Bone Pits</a>
+			<a >The Bone Pits</a>
 			<span class="tooltiptext">
 			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
 			<br>
@@ -1121,11 +1164,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Valley of the Titans</span>.
+        Use o mapa do deserto para ir ao <span class="location">Valley of the Titans</span>.
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Valley of the Titans</a>
+			<a >Valley of the Titans</a>
 			<span class="tooltiptext">
 			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
 			<br>
@@ -1155,7 +1198,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Titan Grotto</a>
+			<a >The Titan Grotto</a>
 			<span class="tooltiptext">
 			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
 			<br>
@@ -1204,7 +1247,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Deshar</a>
+			<a >Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -1235,7 +1278,7 @@
     </label>
     <br>
 	<div class="task-item location tooltip">
-			<a  class="tooltip" >Path of Mourning</a>
+			<a >Path of Mourning</a>
 			<span class="tooltiptext">
 			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
 			<br>
@@ -1255,7 +1298,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Spires of Deshar</a>
+			<a >The Spires of Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -1295,11 +1338,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">The Dreadnought</span>.
+        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir ao <span class="location">The Dreadnought</span>.
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Dreadnought</a>
+			<a >The Dreadnought</a>
 			<span class="tooltiptext">
 			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
 			<br>
@@ -1340,7 +1383,7 @@
     <!-- Início do ATO 3 -->
     <h2 id="ato3">--== ATO 3 ==--</h2>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Sandswept Marsh</a>
+			<a >Sandswept Marsh</a>
 			<span class="tooltiptext">
 			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
 			<br>
@@ -1382,7 +1425,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jungle Ruins</a>
+			<a >Jungle Ruins</a>
 			<span class="tooltiptext">
 			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
 			<br>
@@ -1413,7 +1456,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Venom Crypts</a>
+			<a >The Venom Crypts</a>
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
 			<br>
@@ -1436,7 +1479,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Infested Barrens</a>
+			<a >Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -1468,7 +1511,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Azak Bog</a>
+			<a >The Azak Bog</a>
 			<span class="tooltiptext">
 			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
 			<br>
@@ -1496,7 +1539,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Chimeral Wetlands</a>
+			<a >Chimeral Wetlands</a>
 			<span class="tooltiptext">
 			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
 			<br>
@@ -1522,11 +1565,11 @@
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        (Opcional) Waypoint de volta ao Trial of Chaos, e o faça para ganhar pontos de ascendência
+        Waypoint de volta ao Trial of Chaos, faça-o para ganhar Reward: <span class="recompensastats">2 pontos de ascendência</span>
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jiquani's Machinarium</a>
+			<a >Jiquani's Machinarium</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
 			<br>
@@ -1561,7 +1604,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jiquani's Sanctum</a>
+			<a >Jiquani's Sanctum</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
 			<br>
@@ -1609,7 +1652,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Infested Barrens</a>
+			<a >Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -1624,7 +1667,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Matlan Waterways</a>
+			<a >The Matlan Waterways</a>
 			<span class="tooltiptext">
 			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
 			<br>
@@ -1666,7 +1709,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Drowned City</a>
+			<a >The Drowned City</a>
 			<span class="tooltiptext">
 			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
 			<br>
@@ -1697,7 +1740,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Molten Vault</a>
+			<a >The Molten Vault</a>
 			<span class="tooltiptext">
 			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
 			<br>
@@ -1718,7 +1761,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Apex of Filth</a>
+			<a >The Apex of Filth</a>
 			<span class="tooltiptext">
 			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
 			<br>
@@ -1758,7 +1801,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Temple of Kopec</a>
+			<a >Temple of Kopec</a>
 			<span class="tooltiptext">
 			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
 			<br>
@@ -1785,7 +1828,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Utzaal</a>
+			<a >Utzaal</a>
 			<span class="tooltiptext">
 			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
 			<br>
@@ -1822,7 +1865,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Aggorat</a>
+			<a >Aggorat</a>
 			<span class="tooltiptext">
 			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
 			<br>
@@ -1862,7 +1905,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Black Chambers</a>
+			<a >The Black Chambers</a>
 			<span class="tooltiptext">
 			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
 			<br>
@@ -1916,10 +1959,11 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Clearfell</a>
+			<a >Clearfell</a>
 			<span class="tooltiptext">
 			<img src="images/clearfell.jpg" alt="Clearfell" style="max-width: 100%; height: auto;">
 			<br>
+				
 			</span>
 		</div>
         <br>
@@ -1950,7 +1994,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grelwood</a>
+			<a >The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -1976,10 +2020,13 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Red Vale</a>
+			<a >The Red Vale</a>
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 130%; height: auto;">
-			<br>Semi-círculo
+			<br>
+				Obeliscos spawnam em um Padrão de Triângulo
+				<br>
+				1.	Faça um Semi-círculo
 			</span>
 		</div>
         <br>
@@ -1994,7 +2041,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grelwood</a>
+			<a >The Grelwood</a>
 			<span class="tooltiptext">
 			<img src="images/thegrelwood.jpg" alt="The Grelwood" style="max-width: 130%; height: auto;">
 			<br>
@@ -2016,7 +2063,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Grim Tangle</a>
+			<a >The Grim Tangle</a>
 			<span class="tooltiptext">
 			<img src="images/thegrimtangle.jpg" alt="The Grim Tangle" style="max-width: 130%; height: auto;">
 			<br>
@@ -2037,7 +2084,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Cemetery of The Eternals</a>
+			<a >Cemetery of The Eternals</a>
 			<span class="tooltiptext">
 			<img src="images/cemeteryoftheeternals.jpg" alt="Cemetery of The Eternals" style="max-width: 130%; height: auto;">
 			<br>
@@ -2093,7 +2140,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Hunting Grounds</a>
+			<a >Hunting Grounds</a>
 			<span class="tooltiptext">
 			<img src="images/huntinggrounds.jpg" alt="Hunting Grounds" style="max-width: 130%; height: auto;">
 			<br>
@@ -2117,7 +2164,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Farmlands</a>
+			<a >Ogham Farmlands</a>
 			<span class="tooltiptext">
 			<img src="images/oghamfarmlands.jpg" alt="Ogham Farmlands" style="max-width: 130%; height: auto;">
 			<br>
@@ -2145,7 +2192,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Freythorn</a>
+			<a >Freythorn</a>
 			<span class="tooltiptext">
 			<img src="images/freythorn.jpg" alt="Freythorn" style="max-width: 130%; height: auto;">
 			<br>
@@ -2159,7 +2206,7 @@
         <br>
         <label class="task-item tooltip">
 			<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-			<s>Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensastats"> +30 spirit</span>, <span class="recompensa"> level 4 Uncut Spirit Gem </s>
+			<s>Realize todos os 4 rituais, matando o <span class="mob">The King in the Mists</span> no final. Reward: <span class="recompensa"> level 4 Uncut Spirit Gem</span> , <span class="recompensastats"> +30 spirit</span> </s>
 			<span class="tooltiptext">
 			Debuff VERMELHO: fique PARADO para não tomar freeze
 			<br>
@@ -2173,7 +2220,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Village</a>
+			<a >Ogham Village</a>
 			<span class="tooltiptext">
 			<img src="images/oghamvillage.jpg" alt="Ogham Village" style="max-width: 130%; height: auto;">
 			<br>
@@ -2199,7 +2246,7 @@
         </label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >The Manor Ramparts</a>
+			<a >The Manor Ramparts</a>
 			<span class="tooltiptext">
 			<img src="images/themanorramparts.jpg" alt="The Manor Ramparts" style="max-width: 130%; height: auto;">
 			<br>
@@ -2218,7 +2265,7 @@
 		</label>
         <br>
         <div class="task-item location tooltip">
-			<a  class="tooltip" >Ogham Manor</a>
+			<a >Ogham Manor</a>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -2230,7 +2277,7 @@
         <br>
         <label class="task-item">
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats"> +maximum life</span>
+            <span class="tooltip">Encontre e mate <span class="mob">Candlemass, the Living Rite</span> Reward: <span class="recompensastats">+8% Maximum Life</span>
 			<span class="tooltiptext">
 			<img src="images/oghammanor.jpg" alt="Ogham Manor" style="max-width: 130%; height: auto;">
 			<br>
@@ -2285,7 +2332,7 @@
     <!-- Início do ATO 2 Cruel -->
     <h2 id="ato2-cruel">--== ATO 2 Cruel ==--</h2>
     <div class="task-item location tooltip">
-		<a  class="tooltip" >Vastiri Outskirts</a>
+		<a >Vastiri Outskirts</a>
 		<span class="tooltiptext">
 		<img src="images/vastirioutskirts.jpg" alt="Vastiri Outskirts" style="max-width: 130%; height: auto;">
 		<br>
@@ -2304,7 +2351,7 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan.
+        Portal de volta ao acampamento, fale com <span class="npc">Zarka</span> e suba na The Ardura Caravan. Reward: <span class="recompensa">level 13 Uncut Skill Gem</span>
     </label>
     <br>
     <div class="task-item location tooltip">
@@ -2326,7 +2373,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mawdun Quarry</a>
+			<a >Mawdun Quarry</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunquarry.jpg" alt="Mawdun Quarry" style="max-width: 130%; height: auto;">
 			<br>
@@ -2342,7 +2389,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mawdun Mine</a>
+			<a >Mawdun Mine</a>
 			<span class="tooltiptext">
 			<img src="images/mawdunmine.jpg" alt="Mawdun Mine" style="max-width: 130%; height: auto;">
 			<br>
@@ -2374,7 +2421,7 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir a <span class="location">The Halani Gates</span>.
+        Fale com <span class="npc">Risu</span> e com <span class="npc">Asala</span>, e use o mapa do deserto para ir a <span class="location">The Halani Gates</span>
     </label>
     <br>
     <label class="task-item">
@@ -2384,11 +2431,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Traitor's Passage</span>.
+        Use o mapa do deserto para ir à <span class="location">Traitor's Passage</span>.
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Traitor's Passage</a>
+			<a >Traitor's Passage</a>
 			<span class="tooltiptext">
 			<img src="images/traitorspassage.jpg" alt="Traitor's Passage" style="max-width: 130%; height: auto;">
 			<br>
@@ -2409,19 +2456,21 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Halani Gates</a>
+			<a >The Halani Gates</a>
 			<span class="tooltiptext">
 			<img src="images/thehalanigates.jpg" alt="The Halani Gates" style="max-width: 130%; height: auto;">
 			<br>
 				1.	Sentido oposto da entrada, geralmente para sudeste
 				<br>
 				2.	Padrão S (vai para um lado e para o outro, zigue-zague)
+				<br>
+				3.	Vá pela borda do cânion, evite deixar a NPC para trás ela pode parar em algum pack de mobs
 			</span>
 		</div>
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Encontre e mate <span class="mob">Jamanra, the Risen King</span>. Fique perto do cânion. Atravesse o cânion 3 vezes para encontrar o boss.
+        Encontre e mate <span class="mob">Jamanra, the Risen King</span>
     </label>
 	<br>
     <label class="task-item">
@@ -2444,11 +2493,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Pegue o waypoint, fale os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">Keth</span>.
+        Pegue o waypoint, fale os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir à <span class="location">Keth</span>
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Keth</a>
+			<a >Keth</a>
 			<span class="tooltiptext">
 			<img src="images/keth.jpg" alt="Keth" style="max-width: 130%; height: auto;">
 			<br>
@@ -2476,7 +2525,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Lost City</a>
+			<a >The Lost City</a>
 			<span class="tooltiptext">
 			<img src="images/thelostcity.jpg" alt="The Lost City" style="max-width: 120%; height: auto;">
 			<br>
@@ -2497,7 +2546,7 @@
     </label>
 	<br>
 	<div class="task-item location tooltip">
-			<a  class="tooltip" >Buried Shrines</a>
+			<a >Buried Shrines</a>
 			<span class="tooltiptext">
 			<img src="images/buriedshrines.jpg" alt="Buried Shrines" style="max-width: 130%; height: auto;">
 			<br>
@@ -2525,10 +2574,12 @@
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         (Opcional) Clique no sarcófago e sobreviva. Reward: <span class="recompensa">Uncut Support Gem</span>
     </label>
+	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Encontre e siga para <span class="location">Heart of Keth</span>
     </label>
+	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Mate <span class="mob">Azarian, the Forsaken Son</span> em <span class="location">Buried Shrines</span>
@@ -2554,11 +2605,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Mastodon Badlands</span>.
+        Use o mapa do deserto para ir a <span class="location">Mastodon Badlands</span>
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Mastodon Badlands</a>
+			<a >Mastodon Badlands</a>
 			<span class="tooltiptext">
 			<img src="images/mastodonbadlands.jpg" alt="Mastodon Badlands" style="max-width: 120%; height: auto;">
 			<br>
@@ -2574,7 +2625,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Bone Pits</a>
+			<a >The Bone Pits</a>
 			<span class="tooltiptext">
 			<img src="images/thebonepits.jpg" alt="The Bone Pits" style="max-width: 120%; height: auto;">
 			<br>
@@ -2609,11 +2660,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Use o mapa do deserto para ir a <span class="location">Valley of the Titans</span>.
+        Use o mapa do deserto para ir ao <span class="location">Valley of the Titans</span>.
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Valley of the Titans</a>
+			<a >Valley of the Titans</a>
 			<span class="tooltiptext">
 			<img src="images/valleyofthetitans.jpg" alt="Valley of the Titans" style="max-width: 120%; height: auto;">
 			<br>
@@ -2643,7 +2694,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Titan Grotto</a>
+			<a >The Titan Grotto</a>
 			<span class="tooltiptext">
 			<img src="images/thetitangrotto.jpg" alt="The Titan Grotto" style="max-width: 120%; height: auto;">
 			<br>
@@ -2692,7 +2743,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Deshar</a>
+			<a >Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -2723,7 +2774,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Path of Mourning</a>
+			<a >Path of Mourning</a>
 			<span class="tooltiptext">
 			<img src="images/pathofmourning.jpg" alt="Path of Mourning" style="max-width: 120%; height: auto;">
 			<br>
@@ -2743,7 +2794,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Spires of Deshar</a>
+			<a >The Spires of Deshar</a>
 			<span class="tooltiptext">
 			<img src="images/thespiresofdeshar.jpg" alt="The Spires of Deshar" style="max-width: 120%; height: auto;">
 			<br>
@@ -2783,11 +2834,11 @@
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir a <span class="location">The Dreadnought</span>.
+        Fale com todos os <span class="npc">NPCs</span>, depois use o mapa do deserto para ir ao <span class="location">The Dreadnought</span>
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Dreadnought</a>
+			<a >The Dreadnought</a>
 			<span class="tooltiptext">
 			<img src="images/thedreadnought.jpg" alt="The Dreadnought" style="max-width: 120%; height: auto;">
 			<br>
@@ -2828,7 +2879,7 @@
     <!-- Início do ATO 3 Cruel -->
     <h2 id="ato3-cruel">--== ATO 3 Cruel ==--</h2>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Sandswept Marsh</a>
+			<a >Sandswept Marsh</a>
 			<span class="tooltiptext">
 			<img src="images/sandsweptmarsh.jpg" alt="Sandswept Marsh" style="max-width: 100%; height: auto;">
 			<br>
@@ -2865,7 +2916,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jungle Ruins</a>
+			<a >Jungle Ruins</a>
 			<span class="tooltiptext">
 			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 110%; height: auto;">
 			<br>
@@ -2896,7 +2947,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Venom Crypts</a>
+			<a >The Venom Crypts</a>
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 120%; height: auto;">
 			<br>
@@ -2919,7 +2970,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Infested Barrens</a>
+			<a >Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -2951,7 +3002,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Azak Bog</a>
+			<a >The Azak Bog</a>
 			<span class="tooltiptext">
 			<img src="images/theazakbog.jpg" alt="The Azak Bog" style="max-width: 110%; height: auto;">
 			<br>
@@ -2979,7 +3030,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Chimeral Wetlands</a>
+			<a >Chimeral Wetlands</a>
 			<span class="tooltiptext">
 			<img src="images/chimeralwetlands.jpg" alt="Chimeral Wetlands" style="max-width: 110%; height: auto;">
 			<br>
@@ -3004,7 +3055,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jiquani's Machinarium</a>
+			<a >Jiquani's Machinarium</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanismachinarium.jpg" alt="Jiquani's Machinarium" style="max-width: 110%; height: auto;">
 			<br>
@@ -3039,7 +3090,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Jiquani's Sanctum</a>
+			<a >Jiquani's Sanctum</a>
 			<span class="tooltiptext">
 			<img src="images/jiquanissanctum.jpg" alt="Jiquani's Sanctum" style="max-width: 110%; height: auto;">
 			<br>
@@ -3087,7 +3138,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Infested Barrens</a>
+			<a >Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 110%; height: auto;">
 			<br>
@@ -3102,7 +3153,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Matlan Waterways</a>
+			<a >The Matlan Waterways</a>
 			<span class="tooltiptext">
 			<img src="images/thematlanwaterways.jpg" alt="The Matlan Waterways" style="max-width: 110%; height: auto;">
 			<br>
@@ -3144,7 +3195,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Drowned City</a>
+			<a >The Drowned City</a>
 			<span class="tooltiptext">
 			<img src="images/thedrownedcity.jpg" alt="The Drowned City" style="max-width: 110%; height: auto;">
 			<br>
@@ -3175,7 +3226,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Molten Vault</a>
+			<a >The Molten Vault</a>
 			<span class="tooltiptext">
 			<img src="images/themoltenvault.jpg" alt="The Molten Vault" style="max-width: 110%; height: auto;">
 			<br>
@@ -3196,7 +3247,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Apex of Filth</a>
+			<a >The Apex of Filth</a>
 			<span class="tooltiptext">
 			<img src="images/theapexoffilth.jpg" alt="The Apex of Filth" style="max-width: 110%; height: auto;">
 			<br>
@@ -3236,7 +3287,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Temple of Kopec</a>
+			<a >Temple of Kopec</a>
 			<span class="tooltiptext">
 			<img src="images/templeofkopec.jpg" alt="Temple of Kopec" style="max-width: 110%; height: auto;">
 			<br>
@@ -3262,7 +3313,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Utzaal</a>
+			<a >Utzaal</a>
 			<span class="tooltiptext">
 			<img src="images/utzaal.jpg" alt="utzaal" style="max-width: 110%; height: auto;">
 			<br>
@@ -3294,7 +3345,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >Aggorat</a>
+			<a >Aggorat</a>
 			<span class="tooltiptext">
 			<img src="images/aggorat.jpg" alt="Aggorat" style="max-width: 110%; height: auto;">
 			<br>
@@ -3334,7 +3385,7 @@
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a  class="tooltip" >The Black Chambers</a>
+			<a >The Black Chambers</a>
 			<span class="tooltiptext">
 			<img src="images/theblackchambers.jpg" alt="The Black Chambers" style="max-width: 110%; height: auto;">
 			<br>
@@ -3364,6 +3415,7 @@
 	Serviram como base para esse guia:
 	guias do mobalytics, reddit do poe2, e youtuber lolcohol + campaign codex discord community
     <!-- FIM DO ATO 3 Cruel -->
+	
     </div>
 
     <div class="made-by">Feito por grimgamer9 <img src="images/swag.png" alt="swag"></div>
@@ -3374,61 +3426,6 @@
     let isDarkMode = false; // Inicializa o modo escuro
     let tooltipsEnabled = true; // Inicializa a variável de controle de tooltips
 
-    // Função para mostrar ou esconder tooltips
-    function toggleTooltip(event) {
-        if (!tooltipsEnabled) return; // Impede a exibição da tooltip se as dicas flutuantes estiverem desativadas.
-
-        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
-        if (tooltipText) {
-            const isVisible = tooltipText.style.visibility === "visible"; 
-
-            // Escondendo todas as tooltips
-            document.querySelectorAll('.tooltip .tooltiptext').forEach(t => {
-                t.style.visibility = "hidden";
-                t.style.opacity = "0";
-            });
-
-            // Mostrar a tooltip atual se não estava visível
-            if (!isVisible) {
-                tooltipText.style.visibility = "visible";
-                tooltipText.style.opacity = "1";
-            }
-        }
-    }
-
-    // Função para alternar o estado de tooltips
-    function toggleTooltips() {
-        tooltipsEnabled = !tooltipsEnabled; // Alterna o estado de tooltips
-        const toggleButton = document.querySelector('.toggle-tips');
-        
-        // Atualiza o texto do botão baseado no estado atual
-        if (tooltipsEnabled) {
-            toggleButton.textContent = "Dicas Flutuantes: ON";
-            initializeTooltips(); // Re-inicializa as tooltips, permitindo que sejam clicadas novamente
-        } else {
-            toggleButton.textContent = "Dicas Flutuantes: OFF";
-            // Remove event listeners e esconde tooltips
-            const tooltips = document.querySelectorAll('.tooltip');
-            tooltips.forEach(tooltip => {
-                tooltip.removeEventListener('click', toggleTooltip);
-                const tooltipText = tooltip.querySelector('.tooltiptext');
-                if (tooltipText) {
-                    tooltipText.style.visibility = "hidden"; // Esconde as tooltips
-                    tooltipText.style.opacity = "0";
-                }
-            });
-        }
-    }
-
-    // Inicializa os ouvintes de eventos para cada tooltip
-    function initializeTooltips() {
-        const tooltips = document.querySelectorAll('.tooltip');
-        tooltips.forEach(tooltip => {
-            tooltip.addEventListener('click', toggleTooltip); // Usando `click` para mobile
-        });
-    }
-
-    // Função para alternar entre modo claro e escuro
     function toggleMode() {
         const body = document.body;
         const modeToggleButton = document.querySelector('.mode-toggle');
@@ -3448,18 +3445,86 @@
         });
     }
 
-    // Inicializa os ouvintes de eventos para o botão de troca de tooltips e para o modo
+    function toggleTooltips() {
+        tooltipsEnabled = !tooltipsEnabled;
+        const toggleButton = document.querySelector('.toggle-tips');
+        toggleButton.textContent = tooltipsEnabled ? "Dicas Flutuantes: ON" : "Dicas Flutuantes: OFF";
+    }
+
+    function showTooltip(event) {
+        if (tooltipsEnabled) {
+            const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+            if (tooltipText) {
+                tooltipText.style.visibility = "visible";
+                tooltipText.style.opacity = "1";
+            }
+        }
+    }
+    
+    function hideTooltip(event) {
+        const tooltipText = event.currentTarget.querySelector('.tooltiptext');
+        if (tooltipText) {
+            tooltipText.style.visibility = "hidden";
+            tooltipText.style.opacity = "0";
+        }
+    }
+
+    // Inicializa os ouvintes de eventos para tooltips
+    document.querySelectorAll('.tooltip').forEach(tooltip => {
+        tooltip.addEventListener('mouseover', showTooltip);
+        tooltip.addEventListener('mouseout', hideTooltip);
+    });
+
+    // Adiciona ouvintes de eventos para os botões de modo e tooltips
     document.querySelector('.toggle-tips').addEventListener('click', toggleTooltips);
     document.querySelector('.mode-toggle').addEventListener('click', toggleMode);
-    initializeTooltips(); // Chama esta função para inicializar os tooltips no carregamento
 	
-		// fechar tooltip clicando no X
-	function closeTooltip(event) {
-    const tooltipText = event.target.parentElement;
-    tooltipText.style.visibility = "hidden"; // Esconde a tooltip
-    tooltipText.style.opacity = "0"; // Faz a tooltip invisível
-}
+	//cronometro aqui
+	let startTime, updatedTime, difference, tInterval;
+        let running = false;
+        
+		function startTimer() {
+            if (!running) {
+                startTime = new Date().getTime() - (difference || 0); // Use a diferença para continuar de onde parou
+                tInterval = setInterval(updateTimer, 10); // Atualiza a cada 10 milissegundos
+                running = true;
+            }
+        }
 
-</script>
+        function updateTimer() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime; // Cálculo da diferença
+            // Calcula horas, minutos, segundos e centésimos
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            let centiseconds = Math.floor((difference % 1000) / 10); // Centésimos de segundo
+
+            // Formata para exibir
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            centiseconds = (centiseconds < 10) ? "0" + centiseconds : centiseconds;
+
+            document.getElementById("timer").innerHTML = hours + ":" + minutes + ":" + seconds + "." + centiseconds; // Atualiza a exibição
+        }
+
+        function pauseTimer() {
+            clearInterval(tInterval);
+            running = false; // Marca o cronometro como parado
+        }
+
+        function resetTimer() {
+            clearInterval(tInterval);
+            running = false; // Marca o cronometro como parado
+            difference = 0; // Reseta a diferença
+            document.getElementById("timer").innerHTML = "00:00:00.00"; // Reseta a exibição
+        }
+
+        // Eventos dos botões
+        document.getElementById("startButton").addEventListener("click", startTimer);
+        document.getElementById("pauseButton").addEventListener("click", pauseTimer);
+        document.getElementById("resetButton").addEventListener("click", resetTimer);
+    </script>
 </body>
 </html>
