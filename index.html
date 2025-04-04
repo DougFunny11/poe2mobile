@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- versão 1.25m -->
+    <!-- versão 1.26m -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Em busca da felicidade - vamo doando</title>
@@ -339,6 +339,16 @@
     margin-left: 5px; /* Espaço entre o conteúdo da tooltip e o "X" */
     color: #f00; /* Cor do "X", vermelho */
 }
+
+a {
+            color: var(--dark-hyperlink); /* Cor padrão do hyperlink no modo escuro */
+            text-decoration: none; /* Remove o sublinhado */
+        }
+
+        a:hover {
+            color: var(--yellow); /* Cor no hover */
+        }
+		
 </style>
 </head>
 <body>
@@ -393,18 +403,17 @@
 			<br>
 				
 			</span>
-			<div class="highlight-box" style="border: 2px solid red; background-color: #ffe6e6; padding: 15px; border-radius: 8px; font-size: 1.5em; font-weight: bold; margin-top: 15px;">
+			<div class="highlight-box" style="border: 2px solid red; background-color: #ffe6e6; padding: 15px; border-radius: 8px; font-size: 1.5em; font-weight: bold; margin-top: 15px; color: #000000;">
 			IMPORTANTE: toque para ver os layouts!
 			</div>
 		</div>
 		<br>
 		OBS. O jogo rotaciona/inverte os mapas, mas o layout continua parecido!
 		<br>
-		<br>
-		OBS. Você está vendo a versão MOBILE do site, caso esteja no PC troque clicando no botão abaixo
-		<div class="version-switch">
-			<a href="https://dougfunny11.github.io/poe2/" class="version-button" target="_blank">Versão PC</a>
-			<a href="https://dougfunny11.github.io/poe2mobile/" class="version-button" target="_blank">Versão Mobile</a>
+		OBS. Você está na versão MOBILE do site, caso queira trocar clique no botão abaixo
+		<div class="version-switch" style="text-align: left;">
+			<a href="https://dougfunny11.github.io/poe2/" class="version-button" target="_blank" style="color: #CCCCCC;">Versão PC</a>
+			<a href="https://dougfunny11.github.io/poe2mobile/" class="version-button" target="_blank" style="color: #FFFFFF;">Versão Mobile</a>
 		</div>
 		<br>
         <h2 id="ato1">--== ATO 1 ==--</h2>
@@ -512,7 +521,7 @@
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 100%; height: auto;">
 			<br>
-				Obeliscos spawnam em um padrão de Triângulo
+				Os 3 Obeliscos spawnam em um padrão de Triângulo
 				<br>
 				1.	Faça um Semi-círculo
 			</span>
@@ -2030,7 +2039,7 @@
 			<span class="tooltiptext">
 			<img src="images/theredvale.jpg" alt="The Red Vale" style="max-width: 100%; height: auto;">
 			<br>
-				Obeliscos spawnam em um padrão de Triângulo
+				Os 3 Obeliscos spawnam em um padrão de Triângulo
 				<br>
 				1.	Faça um Semi-círculo
 			</span>
@@ -3426,11 +3435,13 @@
     </label>
 	<br>
 	<br>
-	Créditos:
-	<br>
-	Serviram como base para esse guia:
-	guias do mobalytics, reddit do poe2, youtuber lolcohol + campaign codex discord community, poe2way.
+
     <!-- FIM DO ATO 3 Cruel -->
+
+	<p>Créditos:</p>
+	<p>
+    <em>Serviram como base para esse guia: guias do mobalytics, reddit do poe2, youtuber lolcohol + campaign codex discord community, poe2way.</em>
+	</p>
 	
     </div>
 
