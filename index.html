@@ -726,7 +726,12 @@ a {
         <br>
         <label class="task-item">
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-            Se for seu primeiro personagem da liga encontre <span class="item">Smithing Tools</span> .
+            Se for seu primeiro personagem da liga encontre <span class="item">Smithing Tools</span>
+        </label>
+		<br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (Opcional) Próximo das <span class="item">Smithing Tools</span> tem uma runa dentro duma chest, leve-a pro <span class="npc">Renly</span> na cidade. Reward: <span class="recompensa">runa</span>
         </label>
         <br>
         <label class="task-item">
@@ -1266,7 +1271,9 @@ a {
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 100%; height: auto;">
 			<br>
-				1.	Duas áreas. A segunda é cheia de construções.
+					Duas áreas. A segunda é cheia de construções.
+				<br>
+				1.	Não abrace a parede, siga para o lado oposto (diagonal)
 				<br>
 				2.	O corpo está ao redor de alguma construção, no lado de fora.
 				<br>
@@ -1307,6 +1314,11 @@ a {
 			</span>
 		</div>
     <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) recomendo skipar: Silent Jar <span class="recompensa">level 1 Uncut Support Gem</span>
+    </label>
+	<br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Encontre a entrada para <span class="location">The Spires of Deshar</span>
@@ -1451,7 +1463,7 @@ a {
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a >Jungle Ruins</a>
+			<a href="images/jungleruins.jpg" target="_blank" class="tooltip">Jungle Ruins</a>
 			<span class="tooltiptext">
 			<img src="images/jungleruins.jpg" alt="Jungle Ruins" style="max-width: 100%; height: auto;">
 			<br>
@@ -1463,36 +1475,38 @@ a {
     <br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. <span class="recompensastats"> Reward: +2 Skill Points</span>
+        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. Reward: <span class="recompensastats"> +2 Skill Points</span>
     </label>
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Obtenha o waypoint, não entre ainda nas criptas
-    </label>
-	<br>
-    <label class="task-item">
-        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Encontre <span class="location">Infested Barrens</span>, entre, pegue o waypoint, use-o para voltar à <span class="location">Jungle Ruins</span>
+        (Opcional) Encontre e clique no corpo pendurado na parede. Reward: <span class="recompensa">cinto</span>
     </label>
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Próximo ao waypoint: Encontre e entre em <span class="location">The Venom Crypts</span> 
+        Obtenha o waypoint
     </label>
-    <br>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Próximo ao waypoint: Encontre e entre em <span class="location">The Venom Crypts</span> . Seja rápido para não resetar o mapa!
+    </label>
+	<br>
     <div class="task-item location tooltip">
-			<a >The Venom Crypts</a>
+			<a href="images/thevenomcrypts.jpg" target="_blank" class="tooltip">The Venom Crypts</a>
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 100%; height: auto;">
 			<br>
-				1.	Circunde as paredes internas, se não achar vá pelas bordas
+				1.	Circunde as paredes internas.
+				<br>
+				2.	Se não achar o cadáver no centro do mapa, então vá pelas bordas.
 			</span>
 	</div>
 	<br>
-		<label class="task-item tooltip">
+	<label class="task-item tooltip">
 		<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-		Encontre o cadáver e colete o <span class="item">Corpse-snake Venom</span>, entregue para <span class="npc">Servi</span> na cidade. Reward: <span class="recompensastats"> Venom Draught of ...</span>
+		Encontre o cadáver e colete o <span class="item">Corpse-snake Venom</span>, TP + entregue para <span class="npc">Servi</span> na cidade. Reward: <span class="recompensastats"> Venom Draught of ...</span>
 		<span class="tooltiptext">
         Após entregar escolha um. Não poderá ser alterada depois!
         <img src="images/draughts1.jpg" alt="Venom Draught" style="max-width: 100%; height: auto;">
@@ -1501,11 +1515,16 @@ a {
 	<br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Waypoint para <span class="location">Infested Barrens</span>
+        Waypoint de volta para <span class="location">Jungle Ruins</span>
+    </label>
+	<br>
+    <label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        Encontre e entre em <span class="location">Infested Barrens</span>
     </label>
     <br>
     <div class="task-item location tooltip">
-			<a >Infested Barrens</a>
+			<a href="images/infestedbarrens.jpg" target="_blank" class="tooltip">Infested Barrens</a>
 			<span class="tooltiptext">
 			<img src="images/infestedbarrens.jpg" alt="Infested Barrens" style="max-width: 100%; height: auto;">
 			<br>
@@ -1528,12 +1547,12 @@ a {
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: não dá pra entrar ainda por causa da água, apenas pegue o checkpoint e fale com <span class="npc">Alva</span>
     </label>
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Com os 3 waypoints obtidos, siga para <span class="location">The Azak Bog</span>
+        Depois, waypoint para <span class="location">The Azak Bog</span>
     </label>
     <br>
     <div class="task-item location tooltip">
@@ -1551,7 +1570,7 @@ a {
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Opcional: Encontre o ritual Flameskin e ative todos, dá 25% de resistência a fogo e raridade pelo resto do mapa.
+        Opcional: Encontre o ritual Flameskin e ative todas as fogueiras, dá 25% de resistência a fogo e raridade pelo resto do mapa.
     </label>
     <br>
     <label class="task-item">
@@ -2241,6 +2260,11 @@ a {
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
             <s>(OPCIONAL NO CRUEL) Se for seu primeiro personagem da liga encontre <span class="item">Smithing Tools</span> </s>
         </label>
+		<br>
+		<label class="task-item">
+            <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+            (Opcional) Próximo das <span class="item">Smithing Tools</span> tem uma runa dentro duma chest, leve-a pro <span class="npc">Renly</span> na cidade. Reward: <span class="recompensa">runa</span>
+        </label>
         <br>
         <label class="task-item">
             <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
@@ -2764,7 +2788,9 @@ a {
 			<span class="tooltiptext">
 			<img src="images/deshar.jpg" alt="Deshar" style="max-width: 100%; height: auto;">
 			<br>
-				1.	Duas áreas. A segunda é cheia de construções.
+					Duas áreas. A segunda é cheia de construções.
+				<br>
+				1.	Não abrace a parede, siga para o lado oposto (diagonal)
 				<br>
 				2.	O corpo está ao redor de alguma construção, no lado de fora.
 				<br>
@@ -2805,6 +2831,11 @@ a {
 			</span>
 		</div>
     <br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) recomendo skipar: Silent Jar <span class="recompensa">???</span>
+    </label>
+	<br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
         Encontre a entrada para <span class="location">The Spires of Deshar</span>.
@@ -2959,7 +2990,12 @@ a {
     <br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. <span class="recompensastats"> Reward: +2 Skill Points</span>
+        Encontre e mate o gorila <span class="mob">Mighty Silverfist</span>. Reward: <span class="recompensastats"> +2 Skill Points</span>
+    </label>
+	<br>
+	<label class="task-item">
+        <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
+        (Opcional) Encontre e clique no corpo pendurado na parede. Reward: <span class="recompensa">cinto</span>
     </label>
 	<br>
 	<label class="task-item">
@@ -2982,7 +3018,9 @@ a {
 			<span class="tooltiptext">
 			<img src="images/thevenomcrypts.jpg" alt="The Venom Crypts" style="max-width: 100%; height: auto;">
 			<br>
-				1.	Circunde as paredes internas, se não achar vá pelas bordas
+				1.	Circunde as paredes internas.
+				<br>
+				2.	Se não achar o cadáver no centro do mapa, então vá pelas bordas.
 			</span>
 	</div>
 	<br>
@@ -3024,12 +3062,12 @@ a {
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: Entre, pegue o waypoint, e volte para <span class="location">Infested Barrens</span>
+        Ao encontrar a entrada para <span class="location">The Matlan Waterways</span>: não dá pra entrar ainda por causa da água, apenas pegue o checkpoint e fale com <span class="npc">Alva</span>
     </label>
 	<br>
 	<label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Com os 3 waypoints obtidos, siga para <span class="location">The Azak Bog</span>
+        Depois, waypoint para <span class="location">The Azak Bog</span>
     </label>
     <br>
     <div class="task-item location tooltip">
@@ -3047,7 +3085,7 @@ a {
     <br>
     <label class="task-item">
         <input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)"> 
-        Opcional: Encontre o ritual Flameskin e ative todos, dá 25% de resistência a fogo e raridade pelo resto do mapa.
+        Opcional: Encontre o ritual Flameskin e ative todas as fogueiras, dá 25% de resistência a fogo e raridade pelo resto do mapa.
     </label>
     <br>
     <label class="task-item">
